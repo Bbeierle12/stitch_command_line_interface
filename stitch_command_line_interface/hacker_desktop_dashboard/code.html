@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hacker GUI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "primary": "#3B82F6", // Blue
+                    "background-dark": "#0D1117",
+                    "accent": "#161B22",
+                    "danger": "#DC2626"
+                },
+                fontFamily: {
+                    "display": ["Space Grotesk", "sans-serif"]
+                },
+                borderRadius: {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                },
+            },
+        },
+    }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0D1117;
+        }
+        .hacker-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .hacker-scrollbar::-webkit-scrollbar-track {
+            background: #161B22;
+        }
+        .hacker-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #3B82F6;
+            border-radius: 3px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 300,
+                'GRAD' 0,
+                'opsz' 24
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white">
+<div class="flex h-screen">
+<div class="w-64 bg-accent/50 p-4 flex flex-col justify-between border-r border-primary/20">
+<div class="flex flex-col gap-6">
+<div class="flex gap-3 items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary" data-alt="User avatar with a blue circuit board pattern" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCImmRunMXfEryyfheFNiKh6koE1SjA7_Xa-jYSIlgtcTdSTdyOzMu-mzm_iCQu07jrzwZFvCq2aUk4NZQhnM8dWdV2FV6_HkEwt-nO3mUqUCTeF_hSaFDv4tQZFC358SogfZ6jBxrRqgFztawLSIQ94FASunXWc9VfT7Kj8P6J0toBMuoBoCWMYrOXKZw2Eox4FhmgGyA_RXnK8NUOBAOsfnDQFE3hVLNhfGig4h7DCdP9V_uj4xAfq7n6KnUaUggZqs6i9jFP7hQ7");'></div>
+<div class="flex flex-col">
+<h1 class="text-white text-base font-medium leading-normal">Operator_7</h1>
+<p class="text-primary text-sm font-normal leading-normal">[REDACTED]</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3 px-3 py-2 rounded bg-primary/20">
+<span class="material-symbols-outlined text-primary">monitoring</span>
+<p class="text-white text-sm font-medium leading-normal">Threat Dashboard</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-white/70">hub</span>
+<p class="text-white text-sm font-medium leading-normal">Network Analysis</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-white/70">encrypted</span>
+<p class="text-white text-sm font-medium leading-normal">Secure Comms</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-white/70">database</span>
+<p class="text-white text-sm font-medium leading-normal">Data Feeds</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-white/70">settings</span>
+<p class="text-white text-sm font-medium leading-normal">System Config</p>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-danger/20 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-danger">logout</span>
+<p class="text-danger text-sm font-medium leading-normal">Disconnect</p>
+</div>
+</div>
+<div class="flex-1 p-6 grid grid-cols-3 grid-rows-2 gap-6 hacker-scrollbar overflow-y-auto">
+<div class="col-span-2 row-span-1 bg-accent/50 rounded-lg p-4 flex flex-col border border-primary/20">
+<p class="text-white text-base font-medium leading-normal pb-2">Real-Time Threat Map</p>
+<div class="flex-1 w-full rounded-md bg-background-dark p-2 border border-primary/10">
+<img alt="Complex world map with interconnected nodes and glowing red points indicating threats." class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlvKazY6kA3DqauuK3PFbNdFppaC6mxkkgKb6cGMLTeS1OKouN59n8fzNSl-EsRPt9Sk9KaorlqPQbLTxS8GM-VPoMk53MEnFyiMRty-ajn8DJvy-SQ9yXjqvpHc_fC6bWJ6UZJlRwEyS37Oe24G7PFUH_ccROPYgJ8TqmWSf2nQ6Xk9mtvUi0nxj2uonIfcGX6r6ZxAcs2T1bpUr16wl_u-cdTexKbPUN5T3Fg7yZn7Ti6-csDo1GTE1LvIx8_W6kiciFIFDT92hV"/>
+</div>
+</div>
+<div class="col-span-1 row-span-2 bg-accent/50 rounded-lg p-4 flex flex-col border border-primary/20">
+<div class="flex flex-col h-full">
+<p class="text-white text-base font-medium leading-normal pb-2">Secure Communication Channel</p>
+<div class="flex-1 bg-background-dark p-2 rounded-md border border-primary/10 mb-2 flex flex-col gap-2 overflow-y-auto hacker-scrollbar">
+<p class="text-sm font-mono text-white/80"><span class="text-primary">[14:21:03] Falcon:</span> Target acquired. Awaiting instructions.</p>
+<p class="text-sm font-mono text-white/80"><span class="text-red-500">[14:21:15] Eagle:</span> Hostile network detected. Proceed with caution.</p>
+<p class="text-sm font-mono text-white/80"><span class="text-primary">[14:21:48] Falcon:</span> In position. Deploying payload.</p>
+<p class="text-sm font-mono text-white/80"><span class="text-white">[14:22:01] Control:</span> Stand by for data exfiltration.</p>
+</div>
+<label>
+<textarea class="form-input w-full resize-none rounded-md text-white focus:outline-none focus:ring-1 focus:ring-primary border-primary/20 bg-background-dark placeholder:text-white/50 p-2 text-sm font-mono" placeholder="&gt; Encrypting message..." rows="2"></textarea>
+</label>
+</div>
+</div>
+<div class="col-span-2 row-span-1 grid grid-cols-2 gap-6">
+<div class="flex flex-col gap-2 rounded-lg border border-primary/20 p-4 bg-accent/50">
+<p class="text-white text-base font-medium leading-normal">Encrypted Data Feed (IN)</p>
+<div class="flex items-center gap-4">
+<p class="text-primary text-3xl font-bold">1.2 TB/s</p>
+<div class="flex gap-1 items-center">
+<span class="material-symbols-outlined text-green-500 text-lg">arrow_upward</span>
+<p class="text-green-500 text-sm font-medium">+15%</p>
+</div>
+</div>
+<div class="flex-1 flex items-end">
+<img alt="Complex interconnected graph showing data flow in" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZMlzIPWWl-_memSQTd_JsuFlqtndS9pEAv-zp4HzymPFnM5WYTYjVzcEqkTdnAnvZFQrNauwiu7JUgl60Wo8S2rRV0dox30H-_RYDWinfO-U3L3L4ioOzGRUNa1PEdHsxzVcTh_JfqEG7RDnhjuZusEKnzRyUmwojPFQtOCGoZ2LcXkgbXsl_1Ot84jqleIyMtgag1AwIANlfJ5ph2GYZxT5JFQZRk3MVn409Czfd35LHREg5OSlRN6XTPynz3xwdwZvseXEIP5ww"/>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-lg border border-red-500/30 p-4 bg-accent/50">
+<p class="text-white text-base font-medium leading-normal">System Anomaly Alerts</p>
+<div class="flex items-center gap-4">
+<p class="text-red-500 text-3xl font-bold">3 High</p>
+<div class="flex gap-1 items-center">
+<span class="material-symbols-outlined text-red-500 text-lg">warning</span>
+<p class="text-red-500 text-sm font-medium">Critical</p>
+</div>
+</div>
+<div class="flex-1 flex items-end">
+<img alt="Complex interconnected graph showing system alerts" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCH3Ak50C-xTFaBOV8gZif7klebk77TDrefXpo8zXduWhQjIdY3JQknHYKXE-OcbjYcG-d1ltwLZzbveEiKxFlAFNvQY-dwhT3zKfEE0Z5S2gDi7nIq8t9WnAlIOcD_V-4efL_fYeHWybMXWYDTXj1yqiYFYfzhmL3PfWa4CaAKK_SgkP9Bl12hTfm4iN-de-gObZ6iPZUqIxrlQ8WltfODE1xS0jsWfnU2dJWu132sD-v4PrnYx1_AealHFcV6R4fL147Jl7tHo8P4"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

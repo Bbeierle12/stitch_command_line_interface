@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Secure Terminal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        @keyframes decrypt {
+            0% {
+                filter: blur(10px) brightness(2);
+                opacity: 0.5;
+                color: #39FF14;
+            }
+            50% {
+                filter: blur(2px) brightness(1.2);
+                opacity: 0.8;
+                color: #2a9d8f;
+            }
+            100% {
+                filter: blur(0) brightness(1);
+                opacity: 1;
+                color: #6c8a93;
+            }
+        }
+        .decrypt-text {
+            animation: decrypt 0.5s ease-out forwards;
+            animation-delay: calc(var(--index) * 0.02s);
+        }
+        .bg-dark-ops {
+            background-color: #0d1b2a;
+        }
+        .text-muted-green {
+            color: #6c8a93;
+        }
+        .text-muted-blue {
+            color: #4a6fa5;
+        }
+        .border-muted-green {
+            border-color: #1b2f33;
+        }
+    </style>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#4a6fa5",
+              "background-light": "#f5f8f5",
+              "background-dark": "#0d1b2a",
+              "muted-green": "#6c8a93",
+              "muted-blue": "#4a6fa5",
+              "border-muted": "#1b2f33"
+            },
+            fontFamily: {
+              "display": ["Space Grotesk", "Noto Sans", "sans-serif"],
+              "mono": ["'Space Grotesk'", "monospace"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background-dark font-display">
+<div class="relative flex h-screen w-full flex-col bg-dark-ops overflow-hidden">
+<div class="flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-muted-green px-4 py-2">
+<div class="flex items-center gap-4 text-muted-green">
+<div class="size-6 text-muted-blue">
+<span class="material-symbols-outlined text-2xl">security</span>
+</div>
+<h2 class="text-muted-green text-lg font-bold">Secure Terminal [Encrypted]</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8 items-center">
+<div class="flex items-center gap-6">
+<a class="text-muted-green/70 hover:text-muted-green text-sm font-medium" href="#">File</a>
+<a class="text-muted-green/70 hover:text-muted-green text-sm font-medium" href="#">Edit</a>
+<a class="text-muted-green/70 hover:text-muted-green text-sm font-medium" href="#">View</a>
+<a class="text-muted-green/70 hover:text-muted-green text-sm font-medium" href="#">Shell</a>
+<a class="text-muted-green/70 hover:text-muted-green text-sm font-medium" href="#">Session</a>
+<a class="text-muted-green/70 hover:text-muted-green text-sm font-medium" href="#">Help</a>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded h-8 w-8 bg-[#1b2f33] text-muted-green">
+<span class="material-symbols-outlined text-base">remove</span>
+</button>
+<button class="flex items-center justify-center rounded h-8 w-8 bg-[#1b2f33] text-muted-green">
+<span class="material-symbols-outlined text-base">crop_square</span>
+</button>
+<button class="flex items-center justify-center rounded h-8 w-8 bg-red-800/50 hover:bg-red-700/60 text-muted-green">
+<span class="material-symbols-outlined text-base">close</span>
+</button>
+</div>
+</div>
+</header>
+<div class="flex border-b border-muted-green px-4">
+<a class="flex items-center justify-center gap-2 border-b-2 border-muted-blue text-muted-green py-2 px-4" href="#">
+<span class="material-symbols-outlined text-xl">vpn_key</span>
+<p class="text-sm font-medium">SSH: user@secure-host</p>
+</a>
+<a class="flex items-center justify-center gap-2 border-b-2 border-transparent text-muted-green/60 hover:text-muted-green py-2 px-4" href="#">
+<span class="material-symbols-outlined text-xl">history</span>
+<p class="text-sm font-medium">History (Encrypted)</p>
+</a>
+<button class="flex items-center justify-center text-muted-green/60 hover:text-muted-green ml-2">
+<span class="material-symbols-outlined text-xl">add</span>
+</button>
+</div>
+<main class="flex-1 overflow-y-auto p-4 text-muted-green text-sm font-mono">
+<p class="decrypt-text" style="--index: 1;">
+<span class="text-muted-blue">[SECURE_SHELL]</span> Authenticating...
+                </p>
+<p class="decrypt-text" style="--index: 2;">
+<span class="text-muted-blue">[ENCRYPTION]</span> Establishing secure tunnel...
+                </p>
+<div class="py-4">
+<pre class="text-muted-blue decrypt-text" style="--index: 3;">  ███████╗███████╗ ██████╗██╗   ██╗██████╗ ███████╗██████╗ 
+  ██╔════╝██╔════╝██╔════╝██║   ██║██╔══██╗██╔════╝██╔══██╗
+  ███████╗███████╗██║     ██║   ██║██████╔╝███████╗██████╔╝
+  ╚════██║╚════██║██║     ██║   ██║██╔══██╗╚════██║██╔═══╝ 
+  ███████║███████║╚██████╗╚██████╔╝██║  ██║███████║██║     
+  ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝     </pre>
+</div>
+<p class="decrypt-text" style="--index: 4;">Last secure login: [ENCRYPTED]</p>
+<p class="decrypt-text" style="--index: 5;">Welcome to Secure Terminal. All traffic is monitored and encrypted.</p>
+<p class="decrypt-text" style="--index: 6;">Type 'help-sec' for a list of secure commands.</p>
+<p> </p>
+<p><span class="text-muted-blue">user@secure-host:~$</span> <span class="decrypt-text inline-block" style="--index: 7;">cGFzc3dvcmRzIC1l</span></p>
+<p class="decrypt-text" style="--index: 8;">total 1</p>
+<p class="decrypt-text" style="--index: 9;">-rwx------ 1 user sec_ops 8192 Jan 1 12:35 credentials.gpg</p>
+<p class="decrypt-text" style="--index: 10;"> </p>
+<p><span class="text-muted-blue">user@secure-host:~$</span> <span class="decrypt-text inline-block" style="--index: 11;">ZGVjcnlwdCAtc291cmNlIGNyZWRlbnRpYWxzLmdwZw==</span></p>
+<p class="decrypt-text" style="--index: 12;">[DECRYPTING]... Access granted.</p>
+</main>
+<div class="flex items-center gap-2 p-4 border-t border-muted-green">
+<p class="text-muted-blue font-mono text-sm">user@secure-host:~$</p>
+<input autofocus="" class="form-input flex-1 bg-transparent border-none text-muted-green focus:outline-none focus:ring-0 p-0 font-mono text-sm" type="text"/>
+<span class="material-symbols-outlined text-muted-blue animate-pulse">lock</span>
+</div>
+</div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const decryptElements = document.querySelectorAll('.decrypt-text');
+        decryptElements.forEach((el, i) => {
+            const text = el.textContent.trim();
+            el.innerHTML = ''; // Clear original text
+            if (el.children.length > 0) {
+                 const children = Array.from(el.childNodes);
+                 el.innerHTML = '';
+                 children.forEach(child => el.appendChild(child.cloneNode(true)));
+            }
+            const chars = text.split('');
+            chars.forEach((char, index) => {
+                const span = document.createElement('span');
+                span.textContent = char;
+                span.style.setProperty('--index', index);
+                span.classList.add('decrypt-text');
+                el.appendChild(span);
+            });
+        });
+    });
+</script>
+
+</body></html>

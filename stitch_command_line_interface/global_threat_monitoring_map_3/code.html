@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Global Threat Monitor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#0f49bd",
+              "background-light": "#f6f6f8",
+              "background-dark": "#101622",
+            },
+            fontFamily: {
+              "display": ["Space Grotesk", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+      }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white">
+<div class="flex h-screen w-full">
+<!-- SideNavBar -->
+<aside class="flex h-full w-64 flex-col justify-between bg-[#111722] p-4 border-r border-[#232f48]">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="Operator 7G's avatar, an abstract green and black pattern." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBl2uT51OorwJ-V0r7HCGgqKLXAf94U9PZdUitTlMULrM4aZplT8Tr91eHQjpo1Ln3PMBVx3VYtDFq0NlOaqGwoOmkYjASImiTq_1qUy8RQhVd4PwSduccOD6cIcJ_pjJsao8SnRRpdZhK4EQB65_AnMA61gynCwIDoU4QjZGu3Q14iA7egKEX-T_3MWPNDDFM1Zm8RvzM9dxgfIW8mWS7gFDPTAxKgnCKdZagSJKuCtexQPHpEIq4WhWhTVcHLQfZBpsBP5uUgTf3h");'></div>
+<div class="flex flex-col">
+<h1 class="text-base font-medium leading-normal">Operator 7G</h1>
+<p class="text-green-400 text-sm font-normal leading-normal">STATUS: ONLINE</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 mt-4">
+<a class="flex items-center gap-3 px-3 py-2 rounded bg-primary/20 text-blue-300" href="#">
+<span class="material-symbols-outlined">public</span>
+<p class="text-sm font-medium leading-normal">Global Map</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded hover:bg-primary/20 hover:text-blue-300" href="#">
+<span class="material-symbols-outlined">shield</span>
+<p class="text-sm font-medium leading-normal">Threat Intel</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded hover:bg-primary/20 hover:text-blue-300" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<p class="text-sm font-medium leading-normal">Analytics</p>
+</a>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/80">
+<span class="truncate">Initiate Protocol</span>
+</button>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded hover:bg-primary/20 hover:text-blue-300" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-medium leading-normal">Settings</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded hover:bg-primary/20 hover:text-blue-300" href="#">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-sm font-medium leading-normal">Logout</p>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<div class="flex flex-1 flex-col">
+<!-- TopNavBar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#232f48] px-10 py-3 bg-[#111722]">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-white">
+<div class="size-6 text-blue-400">
+<span class="material-symbols-outlined" style="font-size: 24px;">travel_explore</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Global Threat Monitor</h2>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-4">
+<label class="flex flex-col min-w-40 !h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded h-full">
+<div class="text-gray-400 flex border-none bg-[#232f48] items-center justify-center pl-3 rounded-l">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded text-white focus:outline-0 focus:ring-0 border-none bg-[#232f48] focus:border-none h-full placeholder:text-gray-400 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal" placeholder="Search location..." value=""/>
+</div>
+</label>
+<div class="flex gap-2">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 bg-[#232f48] text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 hover:bg-primary/30">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 bg-[#232f48] text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 hover:bg-primary/30">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main View -->
+<main class="flex flex-1 flex-col p-4 gap-4">
+<div class="flex flex-1 gap-4">
+<!-- Map -->
+<div class="flex-1 flex flex-col">
+<div class="relative flex-1 bg-cover bg-center rounded" data-alt="A dark, holographic world map with glowing points of interest." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAUnL3RW8gvMB_e2UJKX_rwaWGqnoRpyLXD8gkdjP_o-1ca3bv0HEj_dTdtHJnFTmcwDvMfNBH1IYSugJr6MXnmKpXsaUpFazB1hvFOxnX67Uxc_x22YVKVQrLoWmxIVve1kLXBgX9MxH32P_IPovO40PV_ynZFZ0QXlW465D7zHhhRWnxgwhbRIXoLUdOo-IoIy7T1r1jOSDsEb4efygvfpHbTtZwCrStPmsADlrTTnRQ7yDxo4Xya0EsSUPUq3G1PmK16BPI5Kmx6"); background-blend-mode: overlay; background-color: rgba(0,0,0,0.5);'>
+<!-- Map Controls -->
+<div class="absolute top-4 right-4 flex flex-col gap-3">
+<div class="flex flex-col gap-0.5">
+<button class="flex size-10 items-center justify-center rounded-t bg-[#192233]/80 backdrop-blur-sm shadow-[0_2px_4px_rgba(0,0,0,0.1)] hover:bg-primary/50">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="flex size-10 items-center justify-center rounded-b bg-[#192233]/80 backdrop-blur-sm shadow-[0_2px_4px_rgba(0,0,0,0.1)] hover:bg-primary/50">
+<span class="material-symbols-outlined">remove</span>
+</button>
+</div>
+<button class="flex size-10 items-center justify-center rounded bg-[#192233]/80 backdrop-blur-sm shadow-[0_2px_4px_rgba(0,0,0,0.1)] hover:bg-primary/50">
+<span class="material-symbols-outlined">navigation</span>
+</button>
+</div>
+<!-- Threat Indicators -->
+<div class="absolute top-1/2 left-1/3 animate-pulse">
+<div class="w-4 h-4 bg-red-500 rounded-full shadow-[0_0_12px_4px_rgba(239,68,68,0.7)]"></div>
+</div>
+<div class="absolute top-1/3 left-3/4 animate-pulse" style="animation-delay: 0.5s;">
+<div class="w-4 h-4 bg-yellow-400 rounded-full shadow-[0_0_12px_4px_rgba(250,204,21,0.7)]"></div>
+</div>
+<div class="absolute bottom-1/4 right-1/2 animate-pulse" style="animation-delay: 1s;">
+<div class="w-4 h-4 bg-red-500 rounded-full shadow-[0_0_12px_4px_rgba(239,68,68,0.7)]"></div>
+</div>
+<div class="absolute top-2/3 left-1/4 animate-pulse" style="animation-delay: 1.5s;">
+<div class="w-3 h-3 bg-yellow-400 rounded-full shadow-[0_0_10px_3px_rgba(250,204,21,0.7)]"></div>
+</div>
+<div class="absolute bottom-1/3 right-1/4 animate-pulse" style="animation-delay: 0.2s;">
+<div class="w-5 h-5 bg-red-500 rounded-full shadow-[0_0_15px_5px_rgba(239,68,68,0.7)]"></div>
+</div>
+</div>
+</div>
+<!-- Threat Details Panel -->
+<aside class="w-80 flex-shrink-0 bg-[#111722] p-4 rounded border border-[#232f48] flex flex-col gap-4">
+<h3 class="text-lg font-bold text-red-400">Threat Details: High</h3>
+<div class="flex flex-col gap-2 text-sm">
+<p><span class="font-semibold text-gray-400">Origin IP:</span> 198.51.100.14</p>
+<p><span class="font-semibold text-gray-400">Target System:</span> Financial Sector Server</p>
+<p><span class="font-semibold text-gray-400">Vector:</span> DDoS Attack</p>
+<p><span class="font-semibold text-gray-400">Timestamp:</span> 2024-07-26T12:05:31Z</p>
+<p><span class="font-semibold text-gray-400">Status:</span> <span class="text-red-400">ACTIVE</span></p>
+</div>
+<div class="w-full h-px bg-[#232f48] my-2"></div>
+<h3 class="text-lg font-bold text-yellow-400">Threat Details: Medium</h3>
+<div class="flex flex-col gap-2 text-sm">
+<p><span class="font-semibold text-gray-400">Origin IP:</span> 203.0.113.88</p>
+<p><span class="font-semibold text-gray-400">Target System:</span> Government Network</p>
+<p><span class="font-semibold text-gray-400">Vector:</span> Surveillance</p>
+<p><span class="font-semibold text-gray-400">Timestamp:</span> 2024-07-26T12:04:15Z</p>
+<p><span class="font-semibold text-gray-400">Status:</span> <span class="text-yellow-400">MONITORING</span></p>
+</div>
+<div class="w-full h-px bg-[#232f48] my-2"></div>
+<div class="mt-auto">
+<h3 class="text-lg font-bold text-blue-400">Global Intel</h3>
+<p class="text-sm text-gray-300 mt-2"> Threat levels are increasing in the Asia-Pacific region. Recommended to reallocate surveillance assets.</p>
+</div>
+</aside>
+</div>
+<!-- Bottom Section -->
+<div class="flex h-48 gap-4">
+<!-- Stats -->
+<div class="flex-1 flex flex-wrap gap-4 p-4 rounded border border-[#232f48] bg-[#111722]">
+<div class="flex min-w-[158px] flex-1 flex-col justify-center gap-2 rounded p-4 border border-[#324467] bg-[#192233]">
+<p class="text-base font-medium leading-normal text-gray-300">Total Threats Today</p>
+<p class="tracking-light text-2xl font-bold leading-tight text-red-400">1,203,456</p>
+</div>
+<div class="flex min-w-[158px] flex-1 flex-col justify-center gap-2 rounded p-4 border border-[#324467] bg-[#192233]">
+<p class="text-base font-medium leading-normal text-gray-300">Most Targeted Region</p>
+<p class="tracking-light text-2xl font-bold leading-tight text-blue-300">North America</p>
+</div>
+<div class="flex min-w-[158px] flex-1 flex-col justify-center gap-2 rounded p-4 border border-[#324467] bg-[#192233]">
+<p class="text-base font-medium leading-normal text-gray-300">Common Attack Vector</p>
+<p class="tracking-light text-2xl font-bold leading-tight text-blue-300">DDoS</p>
+</div>
+</div>
+<!-- Slider -->
+<div class="w-1/3 flex flex-col justify-center p-4 rounded border border-[#232f48] bg-[#111722]">
+<div class="relative flex w-full flex-col items-start justify-between gap-3">
+<p class="text-white text-base font-medium leading-normal w-full shrink-[3]">Event Timeline (Last 24h)</p>
+<div class="flex h-[38px] w-full pt-1.5">
+<div class="flex h-1 w-full rounded-sm bg-[#324467] pl-[10%] pr-[5%] items-center">
+<div class="relative">
+<div class="absolute -left-3 -top-1.5 flex flex-col items-center gap-1">
+<div class="size-4 rounded-full bg-primary ring-2 ring-primary/50 shadow-[0_0_8px_2px_rgba(15,73,189,0.7)]"></div>
+</div>
+</div>
+<div class="h-1 flex-1 rounded-sm bg-primary"></div>
+<div class="relative">
+<div class="absolute -left-1 -top-1.5 flex flex-col items-center gap-1">
+<div class="size-4 rounded-full bg-primary ring-2 ring-primary/50 shadow-[0_0_8px_2px_rgba(15,73,189,0.7)]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex justify-between w-full text-xs text-gray-400 mt-2">
+<span>-24h</span>
+<span>-12h</span>
+<span>-6h</span>
+<span>Now</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

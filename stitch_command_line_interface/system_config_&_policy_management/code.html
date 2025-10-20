@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Configuration &amp; Policy Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00ffff",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display">
+<div class="flex h-screen w-full">
+<aside class="w-64 bg-[#111722] p-4 flex flex-col justify-between border-r border-slate-800">
+<div>
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="Operator's avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAKV3Pxdqwm5IdFvdeXVgHDaxsL3Jo8LdlT9yj0Mgv33YFxk3kZXtq61C1_YWExKTlhF-lEMzfZK6_FmXq17WHs8EiIDINqawlE8h-tlDeOfK3V4iVoyYQFSwPd2CxxkQKOmPwF-dkM60ZvcG-0CBTOsPcW2Uah7Hu1FPbRD-GIjgZTGkyvvLPNjnTvpvfYw_rU9Owd9MjJhUjte0mkh53n0-LlAJCpAj4pOIEADS2DMG-55909-cP4LvjoQ10DBc7HnNy3RCKAe_VV");'></div>
+<div class="flex flex-col">
+<h1 class="text-white text-base font-medium leading-normal">Operator</h1>
+<p class="text-[#92a4c9] text-sm font-normal leading-normal">Admin</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2 rounded bg-primary/20 text-primary" href="#">
+<span class="material-symbols-outlined">wifi</span>
+<p class="text-sm font-medium leading-normal">Network</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-white hover:bg-primary/10" href="#">
+<span class="material-symbols-outlined">security</span>
+<p class="text-sm font-medium leading-normal">Security</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-white hover:bg-primary/10" href="#">
+<span class="material-symbols-outlined">group</span>
+<p class="text-sm font-medium leading-normal">Users</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-white hover:bg-primary/10" href="#">
+<span class="material-symbols-outlined">apps</span>
+<p class="text-sm font-medium leading-normal">Software</p>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-2">
+<button class="flex w-full items-center justify-center gap-2 rounded h-10 px-4 bg-primary/20 text-primary text-sm font-medium leading-normal">
+<span class="material-symbols-outlined">save</span>
+<span>Save Profile</span>
+</button>
+<button class="flex w-full items-center justify-center gap-2 rounded h-10 px-4 border border-slate-700 text-white text-sm font-medium leading-normal">
+<span class="material-symbols-outlined">upload_file</span>
+<span>Load Profile</span>
+</button>
+</div>
+</aside>
+<main class="flex-1 flex flex-col p-8 bg-background-dark overflow-y-auto">
+<div class="flex flex-col gap-8">
+<header class="flex flex-wrap justify-between gap-3">
+<h1 class="text-white text-4xl font-black leading-tight tracking-[-0.033em] min-w-72">System Configuration &amp; Policy Management</h1>
+</header>
+<div class="flex flex-col gap-4">
+<div class="pb-3">
+<div class="flex border-b border-[#324467] gap-8">
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-primary text-white pb-[13px] pt-4" href="#">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Global Policy</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#92a4c9] pb-[13px] pt-4" href="#">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Module Policy</p>
+</a>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-4">
+<h2 class="text-xl font-bold text-white">Network Settings</h2>
+<div class="flex items-center gap-4 bg-[#111722] px-4 min-h-[72px] py-2 justify-between rounded-lg">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-12">
+<span class="material-symbols-outlined">visibility_off</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-white text-base font-medium leading-normal line-clamp-1">Enable Stealth Mode</p>
+<p class="text-[#92a4c9] text-sm font-normal leading-normal line-clamp-2">Hides system presence on the network</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-slate-700 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white transition-transform"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-[#111722] px-4 min-h-14 justify-between rounded-lg">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-10">
+<span class="material-symbols-outlined">local_fire_department</span>
+</div>
+<p class="text-white text-base font-normal leading-normal flex-1 truncate">Firewall Level</p>
+</div>
+<div class="shrink-0">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-slate-700 text-white text-sm font-medium leading-normal w-fit">
+<span class="truncate">High</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-[#111722] px-4 min-h-14 justify-between rounded-lg">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-10">
+<span class="material-symbols-outlined">dns</span>
+</div>
+<p class="text-white text-base font-normal leading-normal flex-1 truncate">DNS Configuration</p>
+</div>
+<div class="shrink-0">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-slate-700 text-white text-sm font-medium leading-normal w-fit">
+<span class="truncate">Custom</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<h2 class="text-xl font-bold text-white">Security Settings</h2>
+<div class="flex items-center gap-4 bg-[#111722] px-4 min-h-[72px] py-2 justify-between rounded-lg">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-12">
+<span class="material-symbols-outlined">encrypted</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-white text-base font-medium leading-normal line-clamp-1">Full Disk Encryption</p>
+<p class="text-[#92a4c9] text-sm font-normal leading-normal line-clamp-2">Encrypts all data on the primary drive</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-slate-700 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white transition-transform"></div>
+<input class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-[#111722] px-4 min-h-14 justify-between rounded-lg">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-10">
+<span class="material-symbols-outlined">bug_report</span>
+</div>
+<p class="text-white text-base font-normal leading-normal flex-1 truncate">Intrusion Detection</p>
+</div>
+<div class="shrink-0">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-slate-700 text-white text-sm font-medium leading-normal w-fit">
+<span class="truncate">Aggressive</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-yellow-900/30 border border-yellow-500/50 px-4 min-h-[72px] py-2 justify-between rounded-lg">
+<div class="flex items-center gap-4">
+<div class="text-yellow-400 flex items-center justify-center rounded-lg shrink-0 size-12">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-yellow-300 text-base font-medium leading-normal line-clamp-1">Policy Conflict Detected</p>
+<p class="text-yellow-400/80 text-sm font-normal leading-normal line-clamp-2">'Stealth Mode' may conflict with 'Aggressive' Intrusion Detection.</p>
+</div>
+</div>
+<div class="shrink-0">
+<button class="flex items-center justify-center rounded-lg h-8 px-4 bg-yellow-500/20 text-yellow-300 text-sm font-medium leading-normal">
+<span>Resolve</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#111722] rounded-lg p-4 mt-4">
+<h3 class="text-white font-bold mb-2">System Log</h3>
+<div class="font-mono text-xs text-[#92a4c9] h-32 overflow-y-auto">
+<p><span class="text-primary">[14:32:01]</span> System boot initiated...</p>
+<p><span class="text-primary">[14:32:05]</span> Network policy 'Global' loaded.</p>
+<p><span class="text-white">[14:32:05]</span> Firewall level set to 'High'.</p>
+<p><span class="text-white">[14:32:08]</span> Stealth Mode activated.</p>
+<p><span class="text-yellow-400">[14:32:10]</span> WARNING: Potential policy conflict detected.</p>
+<p><span class="text-white">[14:32:15]</span> User 'Operator' authenticated.</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

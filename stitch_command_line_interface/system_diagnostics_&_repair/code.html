@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Integrity Protocol</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0f49bd",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-[#111722] dark group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-row">
+<div class="flex flex-col bg-[#111722] p-4 border-r border-[#324467]">
+<div class="flex flex-col gap-4 h-full">
+<div class="flex gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="Operator avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA7ri-Bfue6YfCzWNEqWkMFZWaqVO7wcCn6r63gGrxIHfVdRBSbhJa13DOXaDy8g-h2-TLiweBSG77Dwysft8zqPUWBdcku4IrXI1JFK1XFNwTq44kCDRST-DC353EH9QmvC0eQV3cFMbUIqgnR0_YbrcFpO0RfBLpBHJtQuXTprInqaArecQJrmC0mUOVCPqDY-0IWC6tcsIkIaDTYAhucoj6hSAJ9KBbw7-MtwqesvH1bS-Pb_lxH4GwVOtnpUrusWAlkBqM58eWF");'></div>
+<div class="flex flex-col">
+<h1 class="text-white text-base font-medium leading-normal">Operator</h1>
+<p class="text-[#92a4c9] text-sm font-normal leading-normal">john.doe@example.com</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3 px-3 py-2 rounded bg-[#232f48]">
+<span class="material-symbols-outlined text-white" style="font-size: 24px;">gas_meter</span>
+<p class="text-white text-sm font-medium leading-normal">Dashboard</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2">
+<span class="material-symbols-outlined text-white" style="font-size: 24px;">settings</span>
+<p class="text-white text-sm font-medium leading-normal">Settings</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2">
+<span class="material-symbols-outlined text-white" style="font-size: 24px;">subject</span>
+<p class="text-white text-sm font-medium leading-normal">Logs</p>
+</div>
+</div>
+<div class="flex-grow"></div>
+<div class="flex flex-col gap-4">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Logout</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex flex-1 flex-col">
+<div class="flex flex-wrap justify-between gap-3 p-4">
+<div class="flex min-w-72 flex-col gap-3">
+<p class="text-white text-4xl font-black leading-tight tracking-[-0.033em] font-display">SYSTEM INTEGRITY PROTOCOL</p>
+<p class="text-[#92a4c9] text-base font-normal leading-normal font-display">System Diagnostics &amp; Repair</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-4 px-4 py-6">
+<div class="flex min-w-72 flex-1 flex-col gap-2 rounded-xl border border-[#324467] p-6 bg-[#192233]">
+<p class="text-white text-base font-medium leading-normal">CPU Load</p>
+<p class="text-white tracking-light text-[32px] font-bold leading-tight truncate">78%</p>
+<div class="flex gap-1">
+<p class="text-[#92a4c9] text-base font-normal leading-normal">Last 24 hours</p>
+<p class="text-[#0bda5e] text-base font-medium leading-normal">+5%</p>
+</div>
+<div class="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
+<svg fill="none" height="148" preserveaspectratio="none" viewbox="-3 0 478 150" width="100%" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H326.769H0V109Z" fill="url(#paint0_linear_1131_5935)"></path>
+<path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25" stroke="#00ffff" stroke-linecap="round" stroke-width="3"></path>
+<defs>
+<lineargradient gradientunits="userSpaceOnUse" id="paint0_linear_1131_5935" x1="236" x2="236" y1="1" y2="149">
+<stop stop-color="#00ffff" stop-opacity="0.3"></stop>
+<stop offset="1" stop-color="#00ffff" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="flex justify-around">
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">12am</p>
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">4am</p>
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">8am</p>
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">12pm</p>
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">4pm</p>
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">8pm</p>
+</div>
+</div>
+</div>
+<div class="flex min-w-72 flex-1 flex-col gap-2 rounded-xl border border-[#324467] p-6 bg-[#192233]">
+<p class="text-white text-base font-medium leading-normal">Memory Usage</p>
+<p class="text-white tracking-light text-[32px] font-bold leading-tight truncate">62%</p>
+<div class="flex gap-1">
+<p class="text-[#92a4c9] text-base font-normal leading-normal">Last 24 hours</p>
+<p class="text-[#ffbf00] text-base font-medium leading-normal">-2%</p>
+</div>
+<div class="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
+<svg fill="none" height="148" preserveaspectratio="none" viewbox="-3 0 478 150" width="100%" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 65C18.1538 65 18.1538 125 36.3077 125C54.4615 125 54.4615 75 72.6154 75C90.7692 75 90.7692 25 108.923 25C127.077 25 127.077 85 145.231 85C163.385 85 163.385 15 181.538 15C199.692 15 199.692 95 217.846 95C236 95 236 45 254.154 45C272.308 45 272.308 115 290.462 115C308.615 115 308.615 5 326.769 5C344.923 5 344.923 145 363.077 145C381.231 145 381.231 55 399.385 55C417.538 55 417.538 105 435.692 105C453.846 105 453.846 35 472 35V149H0V65Z" fill="url(#paint1_linear_1131_5935)"></path>
+<path d="M0 65C18.1538 65 18.1538 125 36.3077 125C54.4615 125 54.4615 75 72.6154 75C90.7692 75 90.7692 25 108.923 25C127.077 25 127.077 85 145.231 85C163.385 85 163.385 15 181.538 15C199.692 15 199.692 95 217.846 95C236 95 236 45 254.154 45C272.308 45 272.308 115 290.462 115C308.615 115 308.615 5 326.769 5C344.923 5 344.923 145 363.077 145C381.231 145 381.231 55 399.385 55C417.538 55 417.538 105 435.692 105C453.846 105 453.846 35 472 35" stroke="#ffbf00" stroke-linecap="round" stroke-width="3"></path>
+<defs>
+<lineargradient gradientunits="userSpaceOnUse" id="paint1_linear_1131_5935" x1="236" x2="236" y1="5" y2="149">
+<stop stop-color="#ffbf00" stop-opacity="0.3"></stop>
+<stop offset="1" stop-color="#ffbf00" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="flex justify-around">
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">12am</p>
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">4am</p>
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">8am</p>
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">12pm</p>
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">4pm</p>
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">8pm</p>
+</div>
+</div>
+</div>
+<div class="flex min-w-72 flex-1 flex-col gap-2 rounded-xl border border-[#324467] p-6 bg-[#192233]">
+<p class="text-white text-base font-medium leading-normal">Disk Space</p>
+<p class="text-white tracking-light text-[32px] font-bold leading-tight truncate">450GB Free</p>
+<div class="flex gap-1">
+<p class="text-[#92a4c9] text-base font-normal leading-normal">Total: 1TB</p>
+<p class="text-[#dc3545] text-base font-medium leading-normal">-50GB</p>
+</div>
+<div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3 pt-4">
+<div class="w-full h-full flex flex-col justify-end">
+<div class="bg-[#dc3545]" style="height: 55%;"></div>
+</div>
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">Used</p>
+<div class="w-full h-full flex flex-col justify-end">
+<div class="bg-[#28a745]" style="height: 45%;"></div>
+</div>
+<p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">Free</p>
+</div>
+</div>
+</div>
+<h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Diagnostic Tools</h2>
+<div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 p-4">
+<div class="flex flex-1 gap-3 rounded-xl border border-[#324467] bg-[#192233] p-4 flex-col items-center text-center">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-size:48px;">memory</span>
+<div class="flex flex-col gap-1">
+<h2 class="text-white text-lg font-bold leading-tight">Hardware Diagnostics</h2>
+<p class="text-[#92a4c9] text-sm font-normal leading-normal">Check CPU, GPU, RAM, and storage health.</p>
+</div>
+<button class="mt-4 flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/20 text-primary text-sm font-bold leading-normal tracking-[0.015em] border border-primary hover:bg-primary hover:text-white transition-colors">
+<span class="truncate">Run Scan</span>
+</button>
+</div>
+<div class="flex flex-1 gap-3 rounded-xl border border-[#324467] bg-[#192233] p-4 flex-col items-center text-center">
+<span class="material-symbols-outlined text-[#00ff00] text-4xl" style="font-size:48px;">bug_report</span>
+<div class="flex flex-col gap-1">
+<h2 class="text-white text-lg font-bold leading-tight">Software Repair</h2>
+<p class="text-[#92a4c9] text-sm font-normal leading-normal">Fix registry errors, corrupted files, and application conflicts.</p>
+</div>
+<button class="mt-4 flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#00ff00]/20 text-[#00ff00] text-sm font-bold leading-normal tracking-[0.015em] border border-[#00ff00] hover:bg-[#00ff00] hover:text-[#111722] transition-colors">
+<span class="truncate">Apply Fixes</span>
+</button>
+</div>
+<div class="flex flex-1 gap-3 rounded-xl border border-[#324467] bg-[#192233] p-4 flex-col items-center text-center">
+<span class="material-symbols-outlined text-[#ffbf00] text-4xl" style="font-size:48px;">speed</span>
+<div class="flex flex-col gap-1">
+<h2 class="text-white text-lg font-bold leading-tight">System Optimization</h2>
+<p class="text-[#92a4c9] text-sm font-normal leading-normal">Disk cleanup, startup manager, and performance tuning.</p>
+</div>
+<button class="mt-4 flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#ffbf00]/20 text-[#ffbf00] text-sm font-bold leading-normal tracking-[0.015em] border border-[#ffbf00] hover:bg-[#ffbf00] hover:text-[#111722] transition-colors">
+<span class="truncate">Optimize Now</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

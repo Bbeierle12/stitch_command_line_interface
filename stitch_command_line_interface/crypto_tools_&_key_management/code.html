@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Crypto Ops</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00ff00",
+                        "background-light": "#1a1a1a",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-dark group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-40 flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#00ff00]/30 px-10 py-3">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-4">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-primary text-lg font-bold leading-tight tracking-[-0.015em]">Crypto Ops</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-primary text-sm font-medium leading-normal" href="#">Dashboard</a>
+<a class="text-white text-sm font-medium leading-normal" href="#">Key Management</a>
+<a class="text-white text-sm font-medium leading-normal" href="#">Tools</a>
+</div>
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 w-10 bg-primary/20 text-primary gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+<span class="material-symbols-outlined text-primary">
+                                    settings
+                                </span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary" data-alt="User avatar with a green circular border" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAUa8Qe0i1O7T2GjVB_wRVpUpbXcCdRZCTGyP3kI-d9NqaTadC1K3hFR3z5kea1n8oPf7Ocl_3hEwAMYRo4OmXKVC9fXkHDNwzkCtIact5RL4CwdaT6FdAdse8nit29t4SRHqFj6eXiFD1YB6us0r1BbeEFXJEW3MNdowtygetvtBJ9s4f7YCM5Nv-RgOJ1OiApU-X1Mn29L6rKt49rV4wXJSynowen9JkH-_IPcwopWR7MPlKMosVBUU3QYU-_G2935p7Bfm5WM9ug");'></div>
+</div>
+</header>
+<div class="flex flex-wrap justify-between gap-3 p-4 mt-8">
+<div class="flex min-w-72 flex-col gap-3">
+<p class="text-primary text-4xl font-black leading-tight tracking-[-0.033em]">Crypto Dashboard</p>
+<p class="text-white/70 text-base font-normal leading-normal">Overview of cryptographic keys and activities</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-4 p-4">
+<div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 border border-primary/30 bg-primary/10">
+<p class="text-white text-base font-medium leading-normal">Keys Managed</p>
+<p class="text-primary tracking-light text-2xl font-bold leading-tight">128</p>
+<p class="text-[#00ff00] text-base font-medium leading-normal">+2%</p>
+</div>
+<div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 border border-primary/30 bg-primary/10">
+<p class="text-white text-base font-medium leading-normal">Active SSH Sessions</p>
+<p class="text-primary tracking-light text-2xl font-bold leading-tight">5</p>
+<p class="text-[#ff4d4d] text-base font-medium leading-normal">-1%</p>
+</div>
+<div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 border border-primary/30 bg-primary/10">
+<p class="text-white text-base font-medium leading-normal">Recent Activities</p>
+<p class="text-primary tracking-light text-2xl font-bold leading-tight">24</p>
+<p class="text-[#00ff00] text-base font-medium leading-normal">+5%</p>
+</div>
+</div>
+<h2 class="text-primary text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Key Management</h2>
+<div class="px-4 py-3 @container">
+<div class="flex overflow-hidden rounded-lg border border-primary/30 bg-background-dark">
+<table class="flex-1">
+<thead>
+<tr class="bg-primary/20">
+<th class="px-4 py-3 text-left text-white w-[150px] text-sm font-medium leading-normal">Key Type</th>
+<th class="px-4 py-3 text-left text-white w-[200px] text-sm font-medium leading-normal">Key ID</th>
+<th class="px-4 py-3 text-left text-white w-[150px] text-sm font-medium leading-normal">Creation Date</th>
+<th class="px-4 py-3 text-left text-white w-[150px] text-sm font-medium leading-normal">Expiration Date</th>
+<th class="px-4 py-3 text-left text-white w-60 text-sm font-medium leading-normal">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-t border-t-primary/30">
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">PGP</td>
+<td class="h-[72px] px-4 py-2 w-[200px] text-white/70 text-sm font-normal leading-normal font-mono">0x1234...5678</td>
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">2023-01-15</td>
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">2025-01-15</td>
+<td class="h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-8 px-4 bg-green-500/20 text-green-400 text-sm font-medium leading-normal w-full border border-green-500/50">
+<span class="truncate">Active</span>
+</button>
+</td>
+</tr>
+<tr class="border-t border-t-primary/30">
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">SSH</td>
+<td class="h-[72px] px-4 py-2 w-[200px] text-white/70 text-sm font-normal leading-normal font-mono">0xABCD...EFGH</td>
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">2022-11-20</td>
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">N/A</td>
+<td class="h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-8 px-4 bg-green-500/20 text-green-400 text-sm font-medium leading-normal w-full border border-green-500/50">
+<span class="truncate">Active</span>
+</button>
+</td>
+</tr>
+<tr class="border-t border-t-primary/30">
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">SSL/TLS</td>
+<td class="h-[72px] px-4 py-2 w-[200px] text-white/70 text-sm font-normal leading-normal font-mono">0x5678...9012</td>
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">2023-03-10</td>
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">2024-03-10</td>
+<td class="h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-8 px-4 bg-yellow-500/20 text-yellow-400 text-sm font-medium leading-normal w-full border border-yellow-500/50">
+<span class="truncate">Expired</span>
+</button>
+</td>
+</tr>
+<tr class="border-t border-t-primary/30">
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">PGP</td>
+<td class="h-[72px] px-4 py-2 w-[200px] text-white/70 text-sm font-normal leading-normal font-mono">0xIJKL...MNOP</td>
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">2021-07-22</td>
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">2023-07-22</td>
+<td class="h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-8 px-4 bg-red-500/20 text-red-400 text-sm font-medium leading-normal w-full border border-red-500/50">
+<span class="truncate">Revoked</span>
+</button>
+</td>
+</tr>
+<tr class="border-t border-t-primary/30">
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">SSH</td>
+<td class="h-[72px] px-4 py-2 w-[200px] text-white/70 text-sm font-normal leading-normal font-mono">0xQRST...UVWX</td>
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">2023-05-30</td>
+<td class="h-[72px] px-4 py-2 w-[150px] text-white/70 text-sm font-normal leading-normal">N/A</td>
+<td class="h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-8 px-4 bg-green-500/20 text-green-400 text-sm font-medium leading-normal w-full border border-green-500/50">
+<span class="truncate">Active</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

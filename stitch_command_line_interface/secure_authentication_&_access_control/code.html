@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Secure Access Control</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0f49bd",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+    </style>
+</head>
+<body class="bg-background-dark dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-[#111722] dark group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<div class="flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col max-w-7xl flex-1 gap-8">
+<div class="flex flex-col md:flex-row gap-8">
+<div class="flex flex-col gap-8 flex-1">
+<div class="bg-[#101622] rounded-lg p-6 flex flex-col gap-6">
+<div class="flex flex-wrap justify-between gap-3 p-4">
+<p class="text-white text-4xl font-black leading-tight tracking-[-0.033em] min-w-72">SECURE LOGIN</p>
+</div>
+<div class="flex flex-col gap-4 px-4">
+<label class="flex flex-col">
+<p class="text-white text-base font-medium leading-normal pb-2">USERNAME</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded text-white focus:outline-0 focus:ring-0 border-none bg-[#232f48] focus:border-none h-14 placeholder:text-[#92a4c9] p-4 text-base font-normal leading-normal" placeholder="Enter your username" value=""/>
+</label>
+<label class="flex flex-col">
+<p class="text-white text-base font-medium leading-normal pb-2">PASSWORD</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded text-white focus:outline-0 focus:ring-0 border-none bg-[#232f48] focus:border-none h-14 placeholder:text-[#92a4c9] p-4 text-base font-normal leading-normal" placeholder="Enter your password" type="password" value=""/>
+</label>
+</div>
+<div class="flex flex-col gap-3 p-4">
+<div class="flex gap-6 justify-between">
+<p class="text-white text-base font-medium leading-normal">Password Strength</p>
+</div>
+<div class="rounded bg-[#324467]">
+<div class="h-2 rounded bg-cyan-400" style="width: 75%; box-shadow: 0 0 5px cyan, 0 0 10px cyan;"></div>
+</div>
+</div>
+<div class="px-4">
+<p class="text-white text-base font-medium leading-normal pb-2">AUTHENTICATION METHOD</p>
+<div class="flex gap-4">
+<button class="flex-1 text-white py-3 px-4 bg-primary rounded-lg flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">password</span>
+                                            Password
+                                        </button>
+<button class="flex-1 text-white/70 py-3 px-4 bg-[#232f48] rounded-lg flex items-center justify-center gap-2 hover:bg-primary/50 transition-colors">
+<span class="material-symbols-outlined">fingerprint</span>
+                                            Biometric
+                                        </button>
+<button class="flex-1 text-white/70 py-3 px-4 bg-[#232f48] rounded-lg flex items-center justify-center gap-2 hover:bg-primary/50 transition-colors">
+<span class="material-symbols-outlined">memory</span>
+                                            Hardware Token
+                                        </button>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-4">
+<button class="bg-primary text-white font-bold py-4 px-4 rounded-lg w-full text-center hover:bg-primary/80 transition-colors">LOGIN</button>
+<p class="text-red-500 text-sm font-normal leading-normal pb-3 pt-1 px-4 flex items-center gap-2">
+<span class="material-symbols-outlined">lock</span>
+<span>Account Locked: 5:00</span>
+</p>
+</div>
+</div>
+<div class="bg-[#101622] rounded-lg p-6 flex flex-col gap-6">
+<h2 class="text-white text-2xl font-bold tracking-[-0.033em] px-4">ACCESS ACTIVITY LOG</h2>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="text-white/70 border-b border-white/20">
+<tr>
+<th class="p-4">Timestamp</th>
+<th class="p-4">User</th>
+<th class="p-4">IP Address</th>
+<th class="p-4">Status</th>
+</tr>
+</thead>
+<tbody class="text-white">
+<tr>
+<td class="p-4">2024-03-15 10:30:15</td>
+<td class="p-4">agent_smith</td>
+<td class="p-4">192.168.1.101</td>
+<td class="p-4 text-green-400">Success</td>
+</tr>
+<tr class="bg-[#232f48]/50">
+<td class="p-4">2024-03-15 10:29:55</td>
+<td class="p-4">neo</td>
+<td class="p-4">10.0.0.5</td>
+<td class="p-4 text-red-500">Failed</td>
+</tr>
+<tr>
+<td class="p-4">2024-03-15 10:28:02</td>
+<td class="p-4">trinity</td>
+<td class="p-4">172.16.0.12</td>
+<td class="p-4 text-green-400">Success</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-8 flex-1">
+<div class="bg-[#101622] rounded-lg p-6 flex flex-col gap-6">
+<div class="flex justify-between items-center px-4">
+<h2 class="text-white text-2xl font-bold tracking-[-0.033em]">USER ROLE MANAGEMENT</h2>
+<button class="text-primary hover:text-white transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                                        Add New Role
+                                    </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="text-white/70 border-b border-white/20">
+<tr>
+<th class="p-4">Role</th>
+<th class="p-4">Description</th>
+<th class="p-4">Permissions</th>
+</tr>
+</thead>
+<tbody class="text-white">
+<tr>
+<td class="p-4">Administrator</td>
+<td class="p-4">Full system access</td>
+<td class="p-4"><button class="text-primary hover:text-white transition-colors">Configure</button></td>
+</tr>
+<tr class="bg-[#232f48]/50">
+<td class="p-4">Analyst</td>
+<td class="p-4">View and analyze data</td>
+<td class="p-4"><button class="text-primary hover:text-white transition-colors">Configure</button></td>
+</tr>
+<tr>
+<td class="p-4">Operator</td>
+<td class="p-4">Limited operational access</td>
+<td class="p-4"><button class="text-primary hover:text-white transition-colors">Configure</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bg-[#101622] rounded-lg p-6 flex flex-col gap-6">
+<h2 class="text-white text-2xl font-bold tracking-[-0.033em] px-4">CONFIGURE PERMISSIONS (Administrator)</h2>
+<div class="grid grid-cols-2 gap-4 px-4">
+<div class="flex items-center gap-2">
+<input checked="" class="form-checkbox bg-[#232f48] border-none text-primary rounded-sm" id="perm1" type="checkbox"/>
+<label class="text-white" for="perm1">Create Users</label>
+</div>
+<div class="flex items-center gap-2">
+<input checked="" class="form-checkbox bg-[#232f48] border-none text-primary rounded-sm" id="perm2" type="checkbox"/>
+<label class="text-white" for="perm2">Delete Users</label>
+</div>
+<div class="flex items-center gap-2">
+<input checked="" class="form-checkbox bg-[#232f48] border-none text-primary rounded-sm" id="perm3" type="checkbox"/>
+<label class="text-white" for="perm3">Modify Roles</label>
+</div>
+<div class="flex items-center gap-2">
+<input checked="" class="form-checkbox bg-[#232f48] border-none text-primary rounded-sm" id="perm4" type="checkbox"/>
+<label class="text-white" for="perm4">Access Logs</label>
+</div>
+<div class="flex items-center gap-2">
+<input class="form-checkbox bg-[#232f48] border-none text-primary rounded-sm" id="perm5" type="checkbox"/>
+<label class="text-white/50" for="perm5">System Shutdown</label>
+</div>
+<div class="flex items-center gap-2">
+<input checked="" class="form-checkbox bg-[#232f48] border-none text-primary rounded-sm" id="perm6" type="checkbox"/>
+<label class="text-white" for="perm6">Export Data</label>
+</div>
+</div>
+<div class="px-4">
+<button class="bg-primary/80 text-white font-bold py-3 px-4 rounded-lg w-full text-center hover:bg-primary transition-colors mt-4">SAVE CHANGES</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

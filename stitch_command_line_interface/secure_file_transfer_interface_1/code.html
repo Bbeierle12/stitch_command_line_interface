@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Secure File Transfer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0f49bd",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+        .glowing-transfer {
+            box-shadow: 0 0 5px #0f49bd, 0 0 10px #0f49bd, 0 0 15px #0f49bd;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white">
+<div class="flex h-screen">
+<aside class="w-64 bg-[#111722] p-4 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="Operator profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDepap9e759HLDQQ-FVgfPnEIhrZHoAbHrYULv41Ll7WmJkSWbhebiLBgPZMM7n-Dd9EcZ6l97rRu1A7QugbxETPZXazAOQ-9z8vvmv4cbAF0JICmulMq-1ECVk9Hj2BuwaDAKEub_Y5Ik5ukidUQgyh3xI0pjW56HrNTKmbfn1z_rzf0xivaO0eb6CCi-7Q6wi_ZVyT02Nm8GyJ3rp70Ntl9-m6BJO_7LRvcLDbA30H_eq_lJXV1-sJVZhH-YVTTW7npmcRnY1bdp7");'></div>
+<div>
+<h1 class="text-white text-base font-medium">Operator</h1>
+<p class="text-[#92a4c9] text-sm">john.doe@example.com</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2 text-white" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded bg-primary text-white" href="#">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span>File Transfer</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-white" href="#">
+<span class="material-symbols-outlined">forum</span>
+<span>Secure Comms</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-white" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-white" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Help</span>
+</a>
+</nav>
+</div>
+<button class="w-full flex items-center justify-center rounded h-10 px-4 bg-primary text-white text-sm font-bold tracking-wider">
+                LOGOUT
+            </button>
+</aside>
+<main class="flex-1 p-8 grid grid-cols-2 gap-8">
+<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-3">
+<p class="text-white text-3xl font-black tracking-[-0.033em]">Local Directory</p>
+<p class="text-[#92a4c9] text-base">Your local file system.</p>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined text-[#92a4c9] absolute left-4 top-1/2 -translate-y-1/2">search</span>
+<input class="form-input w-full min-w-0 resize-none overflow-hidden rounded bg-[#192233] text-white placeholder:text-[#92a4c9] pl-12 pr-4 py-3 border-none focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search local files..."/>
+</div>
+<div class="bg-[#111722] rounded border border-[#324467] flex-1 overflow-auto">
+<table class="w-full">
+<thead>
+<tr class="bg-[#192233]">
+<th class="px-4 py-3 text-left text-white text-sm font-medium">Name</th>
+<th class="px-4 py-3 text-left text-white text-sm font-medium">Size</th>
+<th class="px-4 py-3 text-left text-white text-sm font-medium">Modified</th>
+<th class="px-4 py-3 text-left text-white text-sm font-medium w-32"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-t border-[#324467] hover:bg-[#192233] cursor-pointer">
+<td class="px-4 py-3 text-white text-sm">document.pdf</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">1.2 MB</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">2023-10-27 10:30</td>
+<td class="px-4 py-3 text-right">
+<span class="material-symbols-outlined text-[#92a4c9]">more_vert</span>
+</td>
+</tr>
+<tr class="border-t border-[#324467] hover:bg-[#192233] cursor-pointer">
+<td class="px-4 py-3 text-white text-sm">image.jpg</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">3.4 MB</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">2023-10-27 09:45</td>
+<td class="px-4 py-3 text-right">
+<span class="material-symbols-outlined text-[#92a4c9]">more_vert</span>
+</td>
+</tr>
+<tr class="border-t border-[#324467] hover:bg-[#192233] cursor-pointer">
+<td class="px-4 py-3 text-white text-sm">archive.zip</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">15.7 MB</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">2023-10-26 15:20</td>
+<td class="px-4 py-3 text-right">
+<span class="material-symbols-outlined text-[#92a4c9]">more_vert</span>
+</td>
+</tr>
+<tr class="border-t border-[#324467] hover:bg-[#192233] cursor-pointer">
+<td class="px-4 py-3 text-white text-sm">video.mp4</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">50.2 MB</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">2023-10-26 12:10</td>
+<td class="px-4 py-3 text-right">
+<span class="material-symbols-outlined text-[#92a4c9]">more_vert</span>
+</td>
+</tr>
+<tr class="border-t border-[#324467] hover:bg-[#192233] cursor-pointer">
+<td class="px-4 py-3 text-white text-sm">presentation.pptx</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">5.6 MB</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">2023-10-25 18:05</td>
+<td class="px-4 py-3 text-right">
+<span class="material-symbols-outlined text-[#92a4c9]">more_vert</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-3">
+<p class="text-white text-3xl font-black tracking-[-0.033em]">Remote Directory</p>
+<p class="text-[#92a4c9] text-base">Secure remote server.</p>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined text-[#92a4c9] absolute left-4 top-1/2 -translate-y-1/2">search</span>
+<input class="form-input w-full min-w-0 resize-none overflow-hidden rounded bg-[#192233] text-white placeholder:text-[#92a4c9] pl-12 pr-4 py-3 border-none focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search remote files..."/>
+</div>
+<div class="bg-[#111722] rounded border border-[#324467] flex-1 overflow-auto">
+<table class="w-full">
+<thead>
+<tr class="bg-[#192233]">
+<th class="px-4 py-3 text-left text-white text-sm font-medium">Name</th>
+<th class="px-4 py-3 text-left text-white text-sm font-medium">Size</th>
+<th class="px-4 py-3 text-left text-white text-sm font-medium">Status</th>
+<th class="px-4 py-3 text-left text-white text-sm font-medium w-32"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-t border-[#324467] hover:bg-[#192233] cursor-pointer">
+<td class="px-4 py-3 text-white text-sm">project-alpha.zip</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">25.1 MB</td>
+<td class="px-4 py-3">
+<span class="flex items-center gap-2 text-sm text-green-400">
+<span class="material-symbols-outlined text-base">verified_user</span>
+                                        Encrypted
+                                    </span>
+</td>
+<td class="px-4 py-3 text-right">
+<span class="material-symbols-outlined text-[#92a4c9]">more_vert</span>
+</td>
+</tr>
+<tr class="border-t border-[#324467] hover:bg-[#192233] cursor-pointer">
+<td class="px-4 py-3 text-white text-sm">meeting-notes.docx</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">512 KB</td>
+<td class="px-4 py-3">
+<span class="flex items-center gap-2 text-sm text-yellow-400">
+<span class="material-symbols-outlined text-base">gpp_maybe</span>
+                                        Unencrypted
+                                    </span>
+</td>
+<td class="px-4 py-3 text-right">
+<span class="material-symbols-outlined text-[#92a4c9]">more_vert</span>
+</td>
+</tr>
+<tr class="border-t border-[#324467] hover:bg-[#192233] cursor-pointer">
+<td class="px-4 py-3 text-white text-sm">research-data.csv</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">8.9 MB</td>
+<td class="px-4 py-3">
+<span class="flex items-center gap-2 text-sm text-green-400">
+<span class="material-symbols-outlined text-base">verified_user</span>
+                                        Encrypted
+                                    </span>
+</td>
+<td class="px-4 py-3 text-right">
+<span class="material-symbols-outlined text-[#92a4c9]">more_vert</span>
+</td>
+</tr>
+<tr class="border-t border-[#324467] hover:bg-[#192233] cursor-pointer glowing-transfer">
+<td class="px-4 py-3 text-white text-sm">design-assets.sketch</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">12.3 MB</td>
+<td class="px-4 py-3">
+<div class="w-full bg-[#324467] rounded-full h-2.5">
+<div class="bg-primary h-2.5 rounded-full" style="width: 45%"></div>
+</div>
+</td>
+<td class="px-4 py-3 text-right">
+<span class="material-symbols-outlined text-[#92a4c9]">more_vert</span>
+</td>
+</tr>
+<tr class="border-t border-[#324467] hover:bg-[#192233] cursor-pointer">
+<td class="px-4 py-3 text-white text-sm">code-snippets.txt</td>
+<td class="px-4 py-3 text-[#92a4c9] text-sm">128 KB</td>
+<td class="px-4 py-3">
+<span class="flex items-center gap-2 text-sm text-green-400">
+<span class="material-symbols-outlined text-base">verified_user</span>
+                                        Encrypted
+                                    </span>
+</td>
+<td class="px-4 py-3 text-right">
+<span class="material-symbols-outlined text-[#92a4c9]">more_vert</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+<aside class="w-[400px] bg-[#111722] p-4 flex flex-col">
+<div class="flex items-center justify-between pb-4 border-b border-[#324467]">
+<h2 class="text-white text-xl font-bold">Secure Comms</h2>
+<div class="flex items-center gap-2">
+<button class="text-[#92a4c9] hover:text-white">
+<span class="material-symbols-outlined">person_add</span>
+</button>
+<button class="text-[#92a4c9] hover:text-white">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<div class="py-4 flex-1 flex flex-col overflow-y-auto">
+<div class="flex items-start gap-3 mb-6">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDTcE9Qt_-gPuEq5pmpIXpSAIye_KZk2vWJp4ikXNH3a8WBm-Wsa2qitQfTqeYmT8EfHefHkzRDY5qqT4tTF7JcxsireZrj8Qdt22WFoEVKzZaLEewfziEDtoTyxMRx0WV-xSYUCedVw9_yGqlqP7a-_JaUVw3Yprk5PUfuraOra8HR9PGV1LsT0L8WKQ15oKTFjPcl69DCXXpraI9DgUCSM0vAFrHRLs7uAWNmI7eoR75_kfcAqetK4sdH2y4R1hluWmNU7VAN-NVq");'></div>
+<span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-400 border-2 border-[#111722]"></span>
+</div>
+<div>
+<div class="flex items-baseline gap-2">
+<h3 class="text-white font-medium">Agent Alpha</h3>
+<p class="text-[#92a4c9] text-xs">10:47 AM</p>
+</div>
+<div class="bg-[#192233] p-3 rounded-lg rounded-tl-none mt-1">
+<p class="text-[#d0d8e8]">Package delivered. Awaiting confirmation.</p>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-3 mb-6 flex-row-reverse">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDepap9e759HLDQQ-FVgfPnEIhrZHoAbHrYULv41Ll7WmJkSWbhebiLBgPZMM7n-Dd9EcZ6l97rRu1A7QugbxETPZXazAOQ-9z8vvmv4cbAF0JICmulMq-1ECVk9Hj2BuwaDAKEub_Y5Ik5ukidUQgyh3xI0pjW56HrNTKmbfn1z_rzf0xivaO0eb6CCi-7Q6wi_ZVyT02Nm8GyJ3rp70Ntl9-m6BJO_7LRvcLDbA30H_eq_lJXV1-sJVZhH-YVTTW7npmcRnY1bdp7");'></div>
+<span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-400 border-2 border-[#111722]"></span>
+</div>
+<div>
+<div class="flex items-baseline gap-2 justify-end">
+<h3 class="text-white font-medium">Operator</h3>
+<p class="text-[#92a4c9] text-xs">10:48 AM</p>
+</div>
+<div class="bg-primary p-3 rounded-lg rounded-tr-none mt-1">
+<p class="text-white">Copy that. Confirmation received. Proceed to next objective.</p>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-3 mb-6">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDTcE9Qt_-gPuEq5pmpIXpSAIye_KZk2vWJp4ikXNH3a8WBm-Wsa2qitQfTqeYmT8EfHefHkzRDY5qqT4tTF7JcxsireZrj8Qdt22WFoEVKzZaLEewfziEDtoTyxMRx0WV-xSYUCedVw9_yGqlqP7a-_JaUVw3Yprk5PUfuraOra8HR9PGV1LsT0L8WKQ15oKTFjPcl69DCXXpraI9DgUCSM0vAFrHRLs7uAWNmI7eoR75_kfcAqetK4sdH2y4R1hluWmNU7VAN-NVq");'></div>
+<span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-gray-500 border-2 border-[#111722]"></span>
+</div>
+<div>
+<div class="flex items-baseline gap-2">
+<h3 class="text-white font-medium">Agent Bravo</h3>
+<p class="text-[#92a4c9] text-xs">11:02 AM</p>
+</div>
+<div class="bg-[#192233] p-3 rounded-lg rounded-tl-none mt-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-yellow-400 text-base">hourglass_top</span>
+<p class="text-[#d0d8e8] italic">This message will self-destruct in 5 minutes.</p>
+</div>
+</div>
+</div>
+<div class="text-center my-4">
+<span class="text-xs text-[#92a4c9] flex items-center justify-center gap-2"><span class="material-symbols-outlined text-base text-green-400">lock</span> End-to-End Encrypted</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-[#324467]">
+<div class="relative">
+<input class="form-input w-full min-w-0 resize-none overflow-hidden rounded bg-[#192233] text-white placeholder:text-[#92a4c9] pr-24 py-3 border-none focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Type secure message..."/>
+<div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+<button class="text-[#92a4c9] hover:text-white p-2 rounded-full hover:bg-primary/20">
+<span class="material-symbols-outlined">destruction</span>
+</button>
+<button class="text-[#92a4c9] hover:text-white p-2 rounded-full hover:bg-primary/20">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between mt-2">
+<div class="flex items-center gap-2">
+<button class="flex items-center justify-center gap-2 rounded h-9 px-3 bg-primary/20 text-primary text-sm font-bold tracking-wider hover:bg-primary/30">
+<span class="material-symbols-outlined">call</span>
+</button>
+<button class="flex items-center justify-center gap-2 rounded h-9 px-3 bg-primary/20 text-primary text-sm font-bold tracking-wider hover:bg-primary/30">
+<span class="material-symbols-outlined">videocam</span>
+</button>
+</div>
+<button class="flex items-center justify-center gap-2 rounded h-9 px-4 bg-primary text-white text-sm font-bold tracking-wider">
+<span>SEND</span>
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+
+</body></html>
