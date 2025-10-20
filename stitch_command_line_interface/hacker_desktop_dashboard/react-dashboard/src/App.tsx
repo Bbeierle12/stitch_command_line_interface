@@ -1,18 +1,21 @@
 import { useCallback, useMemo, useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { TopHud } from "./components/TopHud";
 import { LeftDock } from "./components/LeftDock";
 import { SnapshotRail } from "./components/SnapshotRail";
 import { BottomConsole } from "./components/BottomConsole";
 import { InspectorPanel } from "./components/InspectorPanel";
-import { PreviewCard } from "./components/PreviewCard";
-import { EditorStatusCard } from "./components/EditorStatusCard";
-import { CiSummaryCard } from "./components/CiSummaryCard";
-import { SecurityCard } from "./components/SecurityCard";
-import { SystemCard } from "./components/SystemCard";
-import { NetworkCard } from "./components/NetworkCard";
-import { InboxCard } from "./components/InboxCard";
+import { TabNavigation } from "./components/TabNavigation";
 import { CommandPalette } from "./components/CommandPalette";
 import { ElectronStatus } from "./components/ElectronStatus";
+import { DashboardPage } from "./pages/DashboardPage";
+import { PreviewPage } from "./pages/PreviewPage";
+import { EditorPage } from "./pages/EditorPage";
+import { CiPage } from "./pages/CiPage";
+import { SecurityPage } from "./pages/SecurityPage";
+import { SystemPage } from "./pages/SystemPage";
+import { NetworkPage } from "./pages/NetworkPage";
+import { InboxPage } from "./pages/InboxPage";
 import { PreviewMode, PreviewState, CiState, SecState } from "./types";
 import { dataService } from "./services/dataService";
 import { electronService } from "./services/electronService";
@@ -146,88 +149,80 @@ export default function App() {
   }, []);
 
   return (
-    <div className="flex h-screen flex-col bg-ink text-white">
-      {config.features.enableCommandPalette && (
-        <CommandPalette isOpen={paletteOpen} onClose={() => setPaletteOpen(false)} onExecute={handleCommand} />
-      )}
-      {notification && config.features.enableNotifications && (
-        <div
-          className="fixed top-20 right-8 z-30 rounded border border-cyan bg-panel px-4 py-2 text-sm text-cyan shadow-depth animate-pulse"
-          role="status"
-          aria-live="polite"
-        >
-          {notification}
-        </div>
-      )}
-      <TopHud
-        snapshotLabel={timeMode === "live" ? "Live" : "Snapshot 142"}
-        timeMode={timeMode}
-        timeRangeLabel={timeMode === "live" ? "Live ±15m" : "12:30 - 12:45"}
-        onToggleMode={() =>
-          setTimeMode((mode: "live" | "fixed"): "live" | "fixed" =>
-            mode === "live" ? "fixed" : "live"
-          )}
-        onCommandPalette={() => setPaletteOpen(true)}
-      />
-      <div className="flex flex-1 overflow-hidden">
-        <LeftDock />
-        <div className="relative flex flex-1 flex-col">
-          <SnapshotRail
-            snapshots={snapshots}
-            onSelect={(id) => {
-              if (id === "live") setTimeMode("live");
-              else setTimeMode("fixed");
-            }}
-          />
-          <div className="flex flex-1 overflow-hidden">
-            <main className="flex flex-1 overflow-hidden">
-              <div className="flex-1 overflow-y-auto px-6 py-4 scrollbar-thin">
-                <div className="grid grid-cols-12 gap-4 pb-24">
-                  <div className="col-span-12 xl:col-span-8">
-                    <PreviewCard state={previewState} onModeChange={setPreviewMode} />
-                  </div>
-                  <div className="col-span-12 xl:col-span-4">
-                    <EditorStatusCard
-                      currentFile="src/components/PreviewCard.tsx"
-                      branch="feature/live-preview"
-                      diagnostics={{ error: 2, warn: 5, info: 12 }}
-                      dirty
-                      recent={[
-                        { file: "src/App.tsx", delta: "2m" },
-                        { file: "src/components/NetworkCard.tsx", delta: "7m" },
-                        { file: "tailwind.config.js", delta: "12m" }
-                      ]}
-                    />
-                  </div>
-                  <div className="col-span-12 lg:col-span-6">
-                    {ciState ? <CiSummaryCard state={ciState} /> : <LoadingSkeleton />}
-                  </div>
-                  <div className="col-span-12 lg:col-span-6">
-                    {secState ? <SecurityCard state={secState} /> : <LoadingSkeleton />}
-                  </div>
-                  <div className="col-span-12 lg:col-span-4">
-                    {systemMetrics ? <SystemCard metrics={systemMetrics} /> : <LoadingSkeleton />}
-                  </div>
-                  <div className="col-span-12 lg:col-span-8">
-                    <NetworkCard />
-                  </div>
-                  <div className="col-span-12 lg:col-span-4">
-                    <InboxCard />
-                  </div>
-                </div>
-              </div>
-              <InspectorPanel
-                title={inspector.title}
-                summary={inspector.summary}
-                details={inspector.details}
-              />
-            </main>
+    <Router>
+      <div className="flex h-screen flex-col bg-ink text-white">
+        {config.features.enableCommandPalette && (
+          <CommandPalette isOpen={paletteOpen} onClose={() => setPaletteOpen(false)} onExecute={handleCommand} />
+        )}
+        {notification && config.features.enableNotifications && (
+          <div
+            className="fixed top-20 right-8 z-30 rounded border border-cyan bg-panel px-4 py-2 text-sm text-cyan shadow-depth animate-pulse"
+            role="status"
+            aria-live="polite"
+          >
+            {notification}
           </div>
-          <BottomConsole logs={consoleLogs ?? []} />
+        )}
+        <TopHud
+          snapshotLabel={timeMode === "live" ? "Live" : "Snapshot 142"}
+          timeMode={timeMode}
+          timeRangeLabel={timeMode === "live" ? "Live ±15m" : "12:30 - 12:45"}
+          onToggleMode={() =>
+            setTimeMode((mode: "live" | "fixed"): "live" | "fixed" =>
+              mode === "live" ? "fixed" : "live"
+            )}
+          onCommandPalette={() => setPaletteOpen(true)}
+        />
+        <div className="flex flex-1 overflow-hidden">
+          <LeftDock />
+          <div className="relative flex flex-1 flex-col">
+            <SnapshotRail
+              snapshots={snapshots}
+              onSelect={(id) => {
+                if (id === "live") setTimeMode("live");
+                else setTimeMode("fixed");
+              }}
+            />
+            <TabNavigation />
+            <div className="flex flex-1 overflow-hidden">
+              <main className="flex flex-1 overflow-hidden">
+                <Routes>
+                  <Route
+                    path="/"
+                    element={
+                      <DashboardPage
+                        previewState={previewState}
+                        ciState={ciState}
+                        secState={secState}
+                        systemMetrics={systemMetrics}
+                        onPreviewModeChange={setPreviewMode}
+                      />
+                    }
+                  />
+                  <Route
+                    path="/preview"
+                    element={<PreviewPage previewState={previewState} onPreviewModeChange={setPreviewMode} />}
+                  />
+                  <Route path="/editor" element={<EditorPage />} />
+                  <Route path="/ci" element={<CiPage ciState={ciState} />} />
+                  <Route path="/security" element={<SecurityPage secState={secState} />} />
+                  <Route path="/system" element={<SystemPage systemMetrics={systemMetrics} />} />
+                  <Route path="/network" element={<NetworkPage />} />
+                  <Route path="/inbox" element={<InboxPage />} />
+                </Routes>
+                <InspectorPanel
+                  title={inspector.title}
+                  summary={inspector.summary}
+                  details={inspector.details}
+                />
+              </main>
+            </div>
+            <BottomConsole logs={consoleLogs ?? []} />
+          </div>
+          <ElectronStatus />
         </div>
-        <ElectronStatus />
       </div>
-    </div>
+    </Router>
   );
 }
 

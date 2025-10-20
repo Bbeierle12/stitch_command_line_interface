@@ -28,12 +28,9 @@ function createWindow() {
 
   // Load the app
   if (isDev) {
-    // Try common dev server ports
     const devUrl = process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173';
-    mainWindow.loadURL(devUrl).catch(() => {
-      // Fallback to 5174 if 5173 is taken
-      mainWindow.loadURL('http://localhost:5174');
-    });
+    console.log('[Main] Loading dev server:', devUrl);
+    mainWindow.loadURL(devUrl);
     mainWindow.webContents.openDevTools();
   } else {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
