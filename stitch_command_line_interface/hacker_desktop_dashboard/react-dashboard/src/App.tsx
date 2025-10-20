@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import { TopHud } from "./components/TopHud";
 import { LeftDock } from "./components/LeftDock";
 import { SnapshotRail } from "./components/SnapshotRail";
@@ -82,10 +82,17 @@ export default function App() {
 
   // Real-time data polling with configurable intervals
   const isLive = timeMode === "live" && config.features.enablePolling;
-  const ciState = usePolling(() => dataService.getCiState(), config.polling.ci, isLive);
-  const secState = usePolling(() => dataService.getSecurityState(), config.polling.security, isLive);
-  const systemMetrics = usePolling(() => dataService.getSystemMetrics(), config.polling.system, isLive);
-  const consoleLogs = usePolling(() => dataService.getConsoleLogs(), config.polling.console, isLive);
+  
+  // Wrap fetch functions in useCallback to prevent infinite loops
+  const fetchCiState = useCallback(() => dataService.getCiState(), []);
+  const fetchSecState = useCallback(() => dataService.getSecurityState(), []);
+  const fetchSystemMetrics = useCallback(() => dataService.getSystemMetrics(), []);
+  const fetchConsoleLogs = useCallback(() => dataService.getConsoleLogs(), []);
+  
+  const ciState = usePolling(fetchCiState, config.polling.ci, isLive);
+  const secState = usePolling(fetchSecState, config.polling.security, isLive);
+  const systemMetrics = usePolling(fetchSystemMetrics, config.polling.system, isLive);
+  const consoleLogs = usePolling(fetchConsoleLogs, config.polling.console, isLive);
 
   const previewState = useMemo(
     () => dataService.getPreviewState(previewMode),
