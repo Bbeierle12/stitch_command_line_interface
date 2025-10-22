@@ -26,6 +26,9 @@ import systemRoutes from './routes/system';
 
 const app: Application = express();
 
+// Disable x-powered-by header
+app.disable('x-powered-by');
+
 // Security middleware
 app.use(helmet());
 app.use(

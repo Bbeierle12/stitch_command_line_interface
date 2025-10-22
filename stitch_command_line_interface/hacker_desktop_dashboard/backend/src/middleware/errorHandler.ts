@@ -7,6 +7,7 @@ import { logger } from '../utils/logger';
 
 export interface ApiError extends Error {
   status?: number;
+  statusCode?: number;
   code?: string;
   details?: Record<string, unknown>;
 }
@@ -26,8 +27,8 @@ export const errorHandler = (
     body: req.body
   });
 
-  // Determine status code
-  const status = err.status || 500;
+  // Determine status code (support both status and statusCode)
+  const status = err.status || err.statusCode || 500;
   const code = err.code || 'INTERNAL_ERROR';
 
   // Send error response

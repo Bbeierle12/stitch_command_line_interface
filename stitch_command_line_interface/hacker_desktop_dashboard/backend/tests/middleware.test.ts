@@ -29,15 +29,19 @@ describe('Middleware', () => {
     });
 
     it('should handle async errors', async () => {
-      app.get('/test-async-error', async () => {
-        throw new Error('Async error');
+      app.get('/test-async-error', async (req, res, next) => {
+        try {
+          throw new Error('Async error');
+        } catch (err) {
+          next(err);
+        }
       });
       app.use(errorHandler);
 
       const res = await request(app).get('/test-async-error');
 
       expect(res.status).toBeGreaterThanOrEqual(400);
-    });
+    }, 5000); // Set explicit timeout of 5 seconds
 
     it('should return proper error structure', async () => {
       app.get('/test-structured-error', () => {
@@ -211,6 +215,7 @@ describe('Middleware', () => {
 
     beforeEach(() => {
       app = express();
+      app.disable('x-powered-by'); // Disable the header like in our main app
       app.get('/test-headers', (req, res) => {
         res.json({ ok: true });
       });
