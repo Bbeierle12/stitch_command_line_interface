@@ -1,11 +1,35 @@
 export type PreviewMode = "browser" | "cli" | "plots" | "tests" | "docs";
 
+export type BuildStatus = "idle" | "compiling" | "ready" | "error";
+
 export type PreviewState = {
   mode: PreviewMode;
   url?: string;
   tail?: { lines: string[]; since: string };
   artifacts?: string[];
   hmr: { lastMs: number; ok: boolean };
+  buildStatus?: BuildStatus;
+  lastBuildTime?: string;
+};
+
+export type PreviewUpdateEvent = {
+  url: string;
+  hmr: { lastMs: number; ok: boolean };
+  timestamp: string;
+};
+
+export type PreviewBuildEvent = {
+  timestamp: string;
+  status: BuildStatus;
+  durationMs?: number;
+  url?: string;
+};
+
+export type FileChangeEvent = {
+  changeType: 'add' | 'change' | 'unlink';
+  files: string[];
+  timestamp: string;
+  count: number;
 };
 
 export type CiState = {

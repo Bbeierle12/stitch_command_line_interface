@@ -8,7 +8,7 @@ export const config = {
     security: 8000,    // VPN, firewall, alerts
     system: 3000,      // CPU, RAM, temp
     console: 2000,     // Log tail
-    preview: 1000      // HMR status
+    preview: 10000     // HMR status (slow fallback, WebSocket is primary)
   },
 
   // Performance budgets (milliseconds)

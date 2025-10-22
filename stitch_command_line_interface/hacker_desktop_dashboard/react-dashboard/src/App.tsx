@@ -137,6 +137,7 @@ function AppShell() {
       return dataService.getPreviewState(previewMode);
     }
   }, [previewMode]);
+  // Slow polling as fallback (WebSocket is primary in PreviewCard)
   const previewState = usePolling(fetchPreview, config.polling.preview, isLive);
 
   const snapshots = useMemo(

@@ -5,6 +5,7 @@
 
 import { useEffect, useCallback, useState } from 'react';
 import { wsClient, MessageHandler } from '../services/wsClient';
+import type { PreviewUpdateEvent, PreviewBuildEvent, FileChangeEvent } from '../types';
 
 export interface UseWebSocketOptions<T> {
   /** Message type to subscribe to */
@@ -127,4 +128,64 @@ export function useCommandStream() {
     type: 'command_output',
     autoConnect: true,
   });
+}
+
+/**
+ * Hook for subscribing to preview updates (file changes, rebuilds)
+ */
+export function usePreviewStream() {
+  const [iframeKey, setIframeKey] = useState<number>(Date.now());
+  const [buildStatus, setBuildStatus] = useState<'idle' | 'compiling' | 'ready' | 'error'>('idle');
+  const [lastUpdate, setLastUpdate] = useState<PreviewUpdateEvent | null>(null);
+
+  // Listen for preview updates
+  const previewUpdate = useWebSocket<PreviewUpdateEvent>({
+    type: 'preview:update',
+    autoConnect: true,
+    onMessage: (data) => {
+      setLastUpdate(data);
+      // Force iframe reload by changing key
+      setIframeKey(Date.now());
+    },
+  });
+
+  // Listen for build start
+  const buildStart = useWebSocket<PreviewBuildEvent>({
+    type: 'preview:build-start',
+    autoConnect: true,
+    onMessage: () => {
+      setBuildStatus('compiling');
+    },
+  });
+
+  // Listen for build end
+  const buildEnd = useWebSocket<PreviewBuildEvent>({
+    type: 'preview:build-end',
+    autoConnect: true,
+    onMessage: (data) => {
+      setBuildStatus(data.status);
+      if (data.status === 'ready' && data.url) {
+        // Reload iframe when build completes successfully
+        setIframeKey(Date.now());
+      }
+    },
+  });
+
+  // Listen for file changes
+  const fileChange = useWebSocket<FileChangeEvent>({
+    type: 'file:change',
+    autoConnect: true,
+  });
+
+  // Prevent unused variable warnings
+  void buildStart;
+
+  return {
+    iframeKey,
+    buildStatus,
+    lastUpdate,
+    isConnected: previewUpdate.isConnected,
+    fileChanges: fileChange.data,
+    buildEvent: buildEnd.data,
+  };
 }

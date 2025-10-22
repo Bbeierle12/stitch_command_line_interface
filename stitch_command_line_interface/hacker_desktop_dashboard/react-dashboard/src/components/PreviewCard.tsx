@@ -1,5 +1,6 @@
 import { PreviewState, PreviewMode } from "../types";
 import { CardShell } from "./CardShell";
+import { usePreviewStream } from "../hooks/useWebSocket";
 
 const modeLabels: Record<PreviewMode, string> = {
   browser: "Browser",
@@ -15,6 +16,13 @@ type PreviewProps = {
 };
 
 export function PreviewCard({ state, onModeChange }: PreviewProps) {
+  // Use WebSocket for real-time preview updates
+  const { iframeKey, buildStatus, isConnected } = usePreviewStream();
+  
+  // Merge WebSocket build status with state
+  const effectiveBuildStatus = buildStatus !== 'idle' ? buildStatus : state.buildStatus;
+  const hmrOk = effectiveBuildStatus === 'ready' || state.hmr.ok;
+  
   return (
     <CardShell
       title="Live Preview"
@@ -47,7 +55,13 @@ export function PreviewCard({ state, onModeChange }: PreviewProps) {
         </div>
         <div className="relative flex flex-1 items-center justify-center rounded border border-hairline bg-ink/60 p-6">
           {state.mode === "browser" && state.url ? (
-            <iframe title="preview" src={state.url} className="h-full w-full rounded border border-hairline" />
+            <iframe 
+              key={iframeKey}
+              title="preview" 
+              src={state.url} 
+              className="h-full w-full rounded border border-hairline"
+              sandbox="allow-scripts allow-same-origin"
+            />
           ) : state.mode === "cli" && state.tail ? (
             <pre className="h-full w-full overflow-auto bg-black/60 p-4 font-mono text-xs text-ops-green scrollbar-thin">
               {state.tail.lines.join("\n")}
@@ -68,11 +82,21 @@ export function PreviewCard({ state, onModeChange }: PreviewProps) {
           <div className="absolute right-4 top-4 flex items-center gap-2 text-xs">
             <span
               className={`h-2 w-2 rounded-full ${
-                state.hmr.ok ? "bg-ops-green animate-pulse" : "bg-warn"
+                effectiveBuildStatus === 'compiling' 
+                  ? "bg-yellow-500 animate-pulse" 
+                  : hmrOk 
+                  ? "bg-ops-green animate-pulse" 
+                  : "bg-warn"
               }`}
+              title={isConnected ? 'WebSocket connected' : 'WebSocket disconnected'}
             ></span>
             <span className="text-white/60">
-              HMR {state.hmr.ok ? "stable" : "degraded"} · {state.hmr.lastMs} ms
+              HMR {
+                effectiveBuildStatus === 'compiling' ? 'building' :
+                effectiveBuildStatus === 'error' ? 'error' :
+                hmrOk ? "stable" : "degraded"
+              } · {state.hmr.lastMs} ms
+              {!isConnected && ' (offline)'}
             </span>
           </div>
         </div>

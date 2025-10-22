@@ -4,6 +4,9 @@
 
 import { Server as WebSocketServer, WebSocket } from 'ws';
 import { logger } from '../utils/logger';
+import { getFileWatcherService } from '../services/fileWatcherService';
+import { getDevServerService } from '../services/devServerService';
+import path from 'path';
 
 interface WebSocketClient extends WebSocket {
   isAlive?: boolean;
@@ -13,6 +16,13 @@ interface WebSocketClient extends WebSocket {
 
 export function setupWebSocket(wss: WebSocketServer) {
   logger.info('Setting up WebSocket server');
+
+  // Initialize file watcher service
+  const workspacePath = path.join(process.cwd(), 'workspace');
+  const fileWatcher = getFileWatcherService(workspacePath);
+  fileWatcher.initialize(wss);
+
+  logger.info('File watcher and dev server services initialized');
 
   // Handle new connections
   wss.on('connection', (ws: WebSocketClient) => {
@@ -177,6 +187,15 @@ function handleMessage(
 
     case 'broadcast-test':
       broadcast(wss, 'test', { echo: data ?? null, at: new Date().toISOString() });
+      break;
+
+    case 'trigger-rebuild':
+      // Manually trigger a rebuild (for testing)
+      const devServer = getDevServerService();
+      devServer.simulateRebuild().catch(err => {
+        logger.error('Failed to trigger rebuild:', err);
+      });
+      ws.send(JSON.stringify({ type: 'rebuild-triggered', data: { timestamp: new Date().toISOString() } }));
       break;
 
     default:
