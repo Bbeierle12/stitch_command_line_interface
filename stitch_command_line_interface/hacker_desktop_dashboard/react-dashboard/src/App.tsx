@@ -273,7 +273,8 @@ function AppShell() {
               else setTimeMode("fixed");
             }}
           />
-          <MegaLens onNavigate={handleLensNavigate} />
+          {/* MegaLens navigation moved to sidebar */}
+          {/* <MegaLens onNavigate={handleLensNavigate} /> */}
           <div className="flex flex-1 overflow-hidden">
             <main className="flex flex-1 overflow-hidden">
               <Routes>

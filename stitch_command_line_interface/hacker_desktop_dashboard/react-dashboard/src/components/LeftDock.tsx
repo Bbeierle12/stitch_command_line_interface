@@ -5,8 +5,14 @@ import {
   History, 
   CheckSquare,
   ChevronRight,
+  ChevronDown,
   Save,
   Star,
+  Package,
+  Shield,
+  Monitor,
+  Network,
+  Map,
   type LucideIcon
 } from 'lucide-react';
 
@@ -17,6 +23,7 @@ interface NavItem {
   tooltip: string;
   badge?: number;
   href?: string;
+  children?: NavItem[];
 }
 
 interface SavedView {
@@ -58,8 +65,47 @@ const navItems: NavItem[] = [
   }
 ];
 
+const categoryItems: NavItem[] = [
+  {
+    id: 'build',
+    label: 'Build & Deploy',
+    icon: Package,
+    tooltip: 'CI, previews, change planning',
+    badge: 5
+  },
+  {
+    id: 'security',
+    label: 'Security & Identity',
+    icon: Shield,
+    tooltip: 'Threats, policies, incident drills',
+    badge: 4
+  },
+  {
+    id: 'workspace',
+    label: 'Workspace',
+    icon: Monitor,
+    tooltip: 'Editor, snippets, project setup',
+    badge: 4
+  },
+  {
+    id: 'network',
+    label: 'Network & Traffic',
+    icon: Network,
+    tooltip: 'Ingress, telemetry, edge posture',
+    badge: 4
+  },
+  {
+    id: 'intel',
+    label: 'Intel & Atlas',
+    icon: Map,
+    tooltip: 'Maps, saved sets, research dossiers',
+    badge: 5
+  }
+];
+
 export function LeftDock() {
   const [activeTab, setActiveTab] = useState('explorer');
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [savedViews] = useState<SavedView[]>([
     { id: 'view1', name: 'Debug Layout', icon: 'star' },
@@ -72,6 +118,10 @@ export function LeftDock() {
       // Navigation will be handled by parent component via href
       window.location.hash = item.href;
     }
+  };
+
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategory(prev => prev === categoryId ? null : categoryId);
   };
 
   return (
@@ -150,6 +200,79 @@ export function LeftDock() {
             </button>
           );
         })}
+
+        {/* Divider */}
+        <div className="my-2 mx-3 border-t border-hairline" />
+
+        {/* Category Navigation */}
+        <div className="px-2">
+          {!isCollapsed && (
+            <div className="text-[10px] text-white/40 uppercase tracking-[0.2em] px-2 py-2 font-semibold">
+              Categories
+            </div>
+          )}
+          {categoryItems.map((category) => {
+            const Icon = category.icon;
+            const isExpanded = expandedCategory === category.id;
+            
+            return (
+              <div key={category.id}>
+                <button
+                  onClick={() => toggleCategory(category.id)}
+                  className={`
+                    w-full flex items-center gap-3 px-2 py-2.5 rounded
+                    transition-all duration-150 relative group
+                    ${isExpanded 
+                      ? 'bg-hairline text-white' 
+                      : 'text-white/70 hover:bg-hairline/50 hover:text-white'
+                    }
+                  `}
+                  aria-label={category.tooltip}
+                  title={isCollapsed ? category.label : ''}
+                >
+                  <Icon className="w-4 h-4 flex-shrink-0" />
+                  {!isCollapsed && (
+                    <>
+                      <span className="text-sm font-medium flex-1 text-left">{category.label}</span>
+                      {category.badge && (
+                        <span className="bg-white/10 text-white/80 text-xs px-1.5 py-0.5 rounded font-medium">
+                          {category.badge}
+                        </span>
+                      )}
+                      <ChevronDown 
+                        className={`w-4 h-4 transition-transform ${
+                          isExpanded ? '' : '-rotate-90'
+                        }`}
+                      />
+                    </>
+                  )}
+                  
+                  {/* Tooltip for collapsed state */}
+                  {isCollapsed && (
+                    <div className="
+                      absolute left-full ml-2 px-2 py-1 bg-panel border border-hairline
+                      text-xs rounded opacity-0 group-hover:opacity-100 
+                      pointer-events-none transition-opacity whitespace-nowrap
+                      z-50 shadow-depth
+                    ">
+                      {category.label}
+                      {category.badge && ` (${category.badge} items)`}
+                    </div>
+                  )}
+                </button>
+                
+                {/* Expandable content (placeholder for now) */}
+                {isExpanded && !isCollapsed && (
+                  <div className="ml-8 mt-1 mb-2 space-y-1">
+                    <div className="text-xs text-white/50 px-2 py-1">
+                      {category.tooltip}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </nav>
 
       {/* Saved Views */}
