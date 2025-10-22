@@ -21,6 +21,7 @@ import { dataService } from "./services/dataService";
 import { backendApiService } from "./services/backendApiService";
 import { electronService } from "./services/electronService";
 import { usePolling, useKeyboardShortcut } from "./hooks/usePolling";
+import { useLogStream } from "./hooks/useWebSocket";
 import { config } from "./config";
 
 const previewSeeds: Record<PreviewMode, PreviewState> = {
