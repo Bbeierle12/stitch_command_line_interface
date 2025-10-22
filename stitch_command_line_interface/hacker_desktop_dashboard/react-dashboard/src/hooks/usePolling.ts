@@ -1,16 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export function usePolling<T>(fetchFn: () => T, intervalMs: number, enabled = true): T | null {
+export function usePolling<T>(fetchFn: () => T | Promise<T>, intervalMs: number, enabled = true): T | null {
   const [data, setData] = useState<T | null>(null);
+  const mounted = useRef(true);
 
   useEffect(() => {
+    mounted.current = true;
     if (!enabled) return;
 
-    const update = () => setData(fetchFn());
-    update(); // initial fetch
+    const update = async () => {
+      try {
+        const result = await Promise.resolve(fetchFn());
+        if (mounted.current) setData(result);
+      } catch (e) {
+        // swallow polling errors; consider logging later
+      }
+    };
+
+    // initial fetch
+    void update();
 
     const id = setInterval(update, intervalMs);
-    return () => clearInterval(id);
+    return () => {
+      mounted.current = false;
+      clearInterval(id);
+    };
   }, [fetchFn, intervalMs, enabled]);
 
   return data;

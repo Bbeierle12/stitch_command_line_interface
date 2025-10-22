@@ -18,6 +18,7 @@ import { NetworkPage } from "./pages/NetworkPage";
 import { InboxPage } from "./pages/InboxPage";
 import { PreviewMode, PreviewState, CiState, SecState } from "./types";
 import { dataService } from "./services/dataService";
+import { backendApiService } from "./services/backendApiService";
 import { electronService } from "./services/electronService";
 import { usePolling, useKeyboardShortcut } from "./hooks/usePolling";
 import { config } from "./config";
@@ -85,20 +86,57 @@ function AppShell() {
   const isLive = timeMode === "live" && config.features.enablePolling;
   
   // Wrap fetch functions in useCallback to prevent infinite loops
-  const fetchCiState = useCallback(() => dataService.getCiState(), []);
-  const fetchSecState = useCallback(() => dataService.getSecurityState(), []);
-  const fetchSystemMetrics = useCallback(() => dataService.getSystemMetrics(), []);
-  const fetchConsoleLogs = useCallback(() => dataService.getConsoleLogs(), []);
+  const fetchCiState = useCallback(async () => {
+    try {
+      return await backendApiService.getCiState();
+    } catch {
+      // fallback to mock
+      return dataService.getCiState();
+    }
+  }, []);
+  const fetchSecState = useCallback(async () => {
+    try {
+      return await backendApiService.getSecState();
+    } catch {
+      return dataService.getSecurityState();
+    }
+  }, []);
+  const fetchSystemMetrics = useCallback(async () => {
+    try {
+      const sys = await backendApiService.getSystemMetrics();
+      const metrics = [
+        { label: "CPU", value: `${sys.cpu.usage}%`, accent: "text-cyan" },
+        { label: "RAM", value: `${Math.round((sys.memory.used / sys.memory.total) * 100)}%`, accent: "text-cyan" },
+        { label: "Temp", value: `${sys.cpu.temperature}°C`, accent: sys.cpu.temperature > 75 ? "text-warn" : undefined },
+        { label: "Battery", value: sys.battery.charging ? `AC / ${sys.battery.percentage}%` : `${sys.battery.percentage}%` },
+      ];
+      return metrics;
+    } catch {
+      return dataService.getSystemMetrics();
+    }
+  }, []);
+  const fetchConsoleLogs = useCallback(async () => {
+    try {
+      const res = await backendApiService.getConsoleLogs(8);
+      return res.logs.map(l => ({ id: l.id, tag: l.tag, message: l.message, ts: new Date(l.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) }));
+    } catch {
+      return dataService.getConsoleLogs();
+    }
+  }, []);
   
   const ciState = usePolling(fetchCiState, config.polling.ci, isLive);
   const secState = usePolling(fetchSecState, config.polling.security, isLive);
   const systemMetrics = usePolling(fetchSystemMetrics, config.polling.system, isLive);
   const consoleLogs = usePolling(fetchConsoleLogs, config.polling.console, isLive);
 
-  const previewState = useMemo(
-    () => dataService.getPreviewState(previewMode),
-    [previewMode]
-  );
+  const fetchPreview = useCallback(async () => {
+    try {
+      return await backendApiService.getPreviewState(previewMode);
+    } catch {
+      return dataService.getPreviewState(previewMode);
+    }
+  }, [previewMode]);
+  const previewState = usePolling(fetchPreview, config.polling.preview, isLive);
 
   const snapshots = useMemo(
     () => [
@@ -218,7 +256,7 @@ function AppShell() {
                   path="/"
                   element={
                     <DashboardPage
-                      previewState={previewState}
+                      previewState={previewState || previewSeeds[previewMode]}
                       ciState={ciState}
                       secState={secState}
                       systemMetrics={systemMetrics}
@@ -230,7 +268,7 @@ function AppShell() {
                   path="/preview"
                   element={
                     <PreviewPage
-                      previewState={previewState}
+                      previewState={previewState || previewSeeds[previewMode]}
                       onPreviewModeChange={setPreviewMode}
                     />
                   }
