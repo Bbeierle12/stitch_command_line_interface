@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { HashRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { TopHud } from "./components/TopHud";
 import { LeftDock } from "./components/LeftDock";
@@ -82,6 +82,7 @@ function AppShell() {
   const [previewMode, setPreviewMode] = useState<PreviewMode>(config.ui.defaultPreviewMode);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [notification, setNotification] = useState<string>("");
+  const [buildStatus, setBuildStatus] = useState<'idle' | 'building' | 'success' | 'error'>('idle');
 
   // Real-time data polling with configurable intervals
   const isLive = timeMode === "live" && config.features.enablePolling;
@@ -139,6 +140,25 @@ function AppShell() {
   }, [previewMode]);
   // Slow polling as fallback (WebSocket is primary in PreviewCard)
   const previewState = usePolling(fetchPreview, config.polling.preview, isLive);
+
+  // Update build status based on CI state
+  useEffect(() => {
+    if (ciState?.build) {
+      switch(ciState.build.status) {
+        case 'running':
+          setBuildStatus('building');
+          break;
+        case 'pass':
+          setBuildStatus('success');
+          break;
+        case 'fail':
+          setBuildStatus('error');
+          break;
+        default:
+          setBuildStatus('idle');
+      }
+    }
+  }, [ciState]);
 
   const snapshots = useMemo(
     () => [
@@ -239,6 +259,9 @@ function AppShell() {
             mode === "live" ? "fixed" : "live"
           )}
         onCommandPalette={() => setPaletteOpen(true)}
+        projectName="stitch-cli"
+        branch="main"
+        buildStatus={buildStatus}
       />
       <div className="flex flex-1 overflow-hidden">
         <LeftDock />
