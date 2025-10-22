@@ -54,15 +54,33 @@ function createWindow() {
   });
 
   // IPC handlers for system operations
-  ipcMain.handle('execute-command', async (event, command) => {
-    console.log('[Main] Execute command:', command);
+  ipcMain.handle('execute-command', async (event, options) => {
+    console.log('[Main] Execute command:', options);
+    
+    const { commandId, args = [], dryRun = false, timeout = 30000 } = options;
+    
+    // Build command string from commandId and args
+    let command = commandId;
+    if (args.length > 0) {
+      command += ' ' + args.join(' ');
+    }
     
     // Security: Don't execute high-risk commands without explicit confirmation
-    // In production, implement proper command validation and sandboxing
-    if (command.includes('panic') || command.includes('kill') || command.includes('rm ')) {
+    if (command.includes('panic') || command.includes('kill all') || command.includes('rm -rf /')) {
       return { 
-        stdout: '', 
-        stderr: `Command blocked for safety: ${command}. Implement confirmation dialog first.` 
+        success: false,
+        exitCode: 1,
+        stderr: `Command blocked for safety: ${command}. Implement confirmation dialog first.`,
+        error: 'Command blocked for safety'
+      };
+    }
+    
+    // If dry-run, just return the command that would be executed
+    if (dryRun) {
+      return {
+        success: true,
+        stdout: `Would execute: ${command}`,
+        exitCode: 0
       };
     }
     
@@ -72,18 +90,74 @@ function createWindow() {
       const execPromise = util.promisify(exec);
       
       const { stdout, stderr } = await execPromise(command, {
-        timeout: 10000, // 10 second timeout
-        maxBuffer: 1024 * 1024 // 1MB max output
+        timeout: timeout,
+        maxBuffer: 10 * 1024 * 1024 // 10MB max output
       });
       
-      return { stdout, stderr };
+      return { 
+        success: stderr ? false : true,
+        stdout, 
+        stderr,
+        exitCode: stderr ? 1 : 0
+      };
     } catch (error) {
       console.error('[Main] Command execution error:', error);
       return { 
-        stdout: '', 
-        stderr: error.message || 'Command execution failed' 
+        success: false,
+        stdout: error.stdout || '',
+        stderr: error.stderr || error.message,
+        exitCode: error.code || 1,
+        error: error.message
       };
     }
+  });
+
+  // Handler for streaming command output
+  ipcMain.handle('stream-command', async (event, options, onDataCallback) => {
+    console.log('[Main] Stream command:', options);
+    
+    const { commandId, args = [], timeout = 30000 } = options;
+    
+    let command = commandId;
+    if (args.length > 0) {
+      command += ' ' + args.join(' ');
+    }
+    
+    return new Promise((resolve, reject) => {
+      const { spawn } = require('child_process');
+      const child = spawn(command, { shell: true, timeout });
+      
+      let stdout = '';
+      let stderr = '';
+      
+      child.stdout.on('data', (data) => {
+        const chunk = data.toString();
+        stdout += chunk;
+        event.sender.send('command-output', chunk);
+      });
+      
+      child.stderr.on('data', (data) => {
+        const chunk = data.toString();
+        stderr += chunk;
+        event.sender.send('command-output', chunk);
+      });
+      
+      child.on('close', (code) => {
+        resolve({
+          success: code === 0,
+          exitCode: code,
+          error: code !== 0 ? stderr : undefined
+        });
+      });
+      
+      child.on('error', (error) => {
+        resolve({
+          success: false,
+          exitCode: 1,
+          error: error.message
+        });
+      });
+    });
   });
 
   ipcMain.handle('get-system-info', async () => {

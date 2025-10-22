@@ -1,7 +1,26 @@
 // Type definitions for Electron APIs exposed to the renderer process
 
+export interface CommandExecutionOptions {
+  commandId: string;
+  args?: string[];
+  dryRun?: boolean;
+  timeout?: number;
+}
+
+export interface CommandExecutionResult {
+  success: boolean;
+  stdout?: string;
+  stderr?: string;
+  exitCode?: number;
+  error?: string;
+}
+
 export interface ElectronAPI {
-  executeCommand: (command: string) => Promise<{ stdout: string; stderr: string }>;
+  executeCommand: (options: CommandExecutionOptions) => Promise<CommandExecutionResult>;
+  streamCommand: (
+    options: CommandExecutionOptions,
+    onData: (chunk: string) => void
+  ) => Promise<CommandExecutionResult>;
   getSystemInfo: () => Promise<{
     platform: string;
     arch: string;

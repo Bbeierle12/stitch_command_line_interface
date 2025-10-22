@@ -117,3 +117,8 @@ class ElectronService {
 
 // Export singleton instance
 export const electronService = new ElectronService();
+
+// Export utility function
+export function isElectron(): boolean {
+  return electronService.isElectronApp();
+}
