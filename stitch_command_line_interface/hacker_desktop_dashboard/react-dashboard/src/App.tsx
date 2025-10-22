@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from "react";
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { TopHud } from "./components/TopHud";
 import { LeftDock } from "./components/LeftDock";
 import { SnapshotRail } from "./components/SnapshotRail";
 import { BottomConsole } from "./components/BottomConsole";
 import { InspectorPanel } from "./components/InspectorPanel";
-import { TabNavigation } from "./components/TabNavigation";
+import { MegaLens } from "./components/MegaLens";
 import { CommandPalette } from "./components/CommandPalette";
 import { ElectronStatus } from "./components/ElectronStatus";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -74,7 +74,8 @@ const securitySeed: SecState = {
   startupDiff: { added: ["agent-helper"], removed: [] }
 };
 
-export default function App() {
+function AppShell() {
+  const navigate = useNavigate();
   const [timeMode, setTimeMode] = useState<"live" | "fixed">(config.ui.defaultTimeMode);
   const [previewMode, setPreviewMode] = useState<PreviewMode>(config.ui.defaultPreviewMode);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -155,80 +156,111 @@ export default function App() {
     }
   }, []);
 
+  const handleLensNavigate = useCallback(
+    (href: string) => {
+      if (!href) return;
+      if (href === "#/" || href === "#") {
+        navigate("/");
+        return true;
+      }
+      if (href.startsWith("#/")) {
+        navigate(href.slice(1));
+        return true;
+      }
+      return;
+    },
+    [navigate]
+  );
+
+  return (
+    <div className="flex h-screen flex-col bg-ink text-white">
+      {config.features.enableCommandPalette && (
+        <CommandPalette
+          isOpen={paletteOpen}
+          onClose={() => setPaletteOpen(false)}
+          onExecute={handleCommand}
+        />
+      )}
+      {notification && config.features.enableNotifications && (
+        <div
+          className="fixed top-20 right-8 z-30 rounded border border-cyan bg-panel px-4 py-2 text-sm text-cyan shadow-depth animate-pulse"
+          role="status"
+          aria-live="polite"
+        >
+          {notification}
+        </div>
+      )}
+      <TopHud
+        snapshotLabel={timeMode === "live" ? "Live" : "Snapshot 142"}
+        timeMode={timeMode}
+        timeRangeLabel={timeMode === "live" ? "Live +/-15m" : "12:30 - 12:45"}
+        onToggleMode={() =>
+          setTimeMode((mode: "live" | "fixed"): "live" | "fixed" =>
+            mode === "live" ? "fixed" : "live"
+          )}
+        onCommandPalette={() => setPaletteOpen(true)}
+      />
+      <div className="flex flex-1 overflow-hidden">
+        <LeftDock />
+        <div className="relative flex flex-1 flex-col">
+          <SnapshotRail
+            snapshots={snapshots}
+            onSelect={(id) => {
+              if (id === "live") setTimeMode("live");
+              else setTimeMode("fixed");
+            }}
+          />
+          <MegaLens onNavigate={handleLensNavigate} />
+          <div className="flex flex-1 overflow-hidden">
+            <main className="flex flex-1 overflow-hidden">
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <DashboardPage
+                      previewState={previewState}
+                      ciState={ciState}
+                      secState={secState}
+                      systemMetrics={systemMetrics}
+                      onPreviewModeChange={setPreviewMode}
+                    />
+                  }
+                />
+                <Route
+                  path="/preview"
+                  element={
+                    <PreviewPage
+                      previewState={previewState}
+                      onPreviewModeChange={setPreviewMode}
+                    />
+                  }
+                />
+                <Route path="/editor" element={<EditorPage />} />
+                <Route path="/ci" element={<CiPage ciState={ciState} />} />
+                <Route path="/security" element={<SecurityPage secState={secState} />} />
+                <Route path="/system" element={<SystemPage systemMetrics={systemMetrics} />} />
+                <Route path="/network" element={<NetworkPage />} />
+                <Route path="/inbox" element={<InboxPage />} />
+              </Routes>
+              <InspectorPanel
+                title={inspector.title}
+                summary={inspector.summary}
+                details={inspector.details}
+              />
+            </main>
+          </div>
+          <BottomConsole logs={consoleLogs ?? []} />
+        </div>
+        <ElectronStatus />
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
   return (
     <Router>
-      <div className="flex h-screen flex-col bg-ink text-white">
-        {config.features.enableCommandPalette && (
-          <CommandPalette isOpen={paletteOpen} onClose={() => setPaletteOpen(false)} onExecute={handleCommand} />
-        )}
-        {notification && config.features.enableNotifications && (
-          <div
-            className="fixed top-20 right-8 z-30 rounded border border-cyan bg-panel px-4 py-2 text-sm text-cyan shadow-depth animate-pulse"
-            role="status"
-            aria-live="polite"
-          >
-            {notification}
-          </div>
-        )}
-        <TopHud
-          snapshotLabel={timeMode === "live" ? "Live" : "Snapshot 142"}
-          timeMode={timeMode}
-          timeRangeLabel={timeMode === "live" ? "Live ±15m" : "12:30 - 12:45"}
-          onToggleMode={() =>
-            setTimeMode((mode: "live" | "fixed"): "live" | "fixed" =>
-              mode === "live" ? "fixed" : "live"
-            )}
-          onCommandPalette={() => setPaletteOpen(true)}
-        />
-        <div className="flex flex-1 overflow-hidden">
-          <LeftDock />
-          <div className="relative flex flex-1 flex-col">
-            <SnapshotRail
-              snapshots={snapshots}
-              onSelect={(id) => {
-                if (id === "live") setTimeMode("live");
-                else setTimeMode("fixed");
-              }}
-            />
-            <TabNavigation />
-            <div className="flex flex-1 overflow-hidden">
-              <main className="flex flex-1 overflow-hidden">
-                <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <DashboardPage
-                        previewState={previewState}
-                        ciState={ciState}
-                        secState={secState}
-                        systemMetrics={systemMetrics}
-                        onPreviewModeChange={setPreviewMode}
-                      />
-                    }
-                  />
-                  <Route
-                    path="/preview"
-                    element={<PreviewPage previewState={previewState} onPreviewModeChange={setPreviewMode} />}
-                  />
-                  <Route path="/editor" element={<EditorPage />} />
-                  <Route path="/ci" element={<CiPage ciState={ciState} />} />
-                  <Route path="/security" element={<SecurityPage secState={secState} />} />
-                  <Route path="/system" element={<SystemPage systemMetrics={systemMetrics} />} />
-                  <Route path="/network" element={<NetworkPage />} />
-                  <Route path="/inbox" element={<InboxPage />} />
-                </Routes>
-                <InspectorPanel
-                  title={inspector.title}
-                  summary={inspector.summary}
-                  details={inspector.details}
-                />
-              </main>
-            </div>
-            <BottomConsole logs={consoleLogs ?? []} />
-          </div>
-          <ElectronStatus />
-        </div>
-      </div>
+      <AppShell />
     </Router>
   );
 }

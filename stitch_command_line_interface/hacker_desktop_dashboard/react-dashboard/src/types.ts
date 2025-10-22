@@ -41,3 +41,76 @@ export type CardPlacement = {
 };
 
 export type CardType = "preview" | "editor" | "ci" | "security" | "system" | "network" | "inbox";
+
+/**
+ * Content taxonomy primitives that drive the Mega-Lens navigation model.
+ * Mirrors the proposed data model from the Mega-Lens plan.
+ */
+export type ContentPage = {
+  id: string;
+  slug: string;
+  title: string;
+  section: string;
+  subSection?: string;
+  audience: string[];
+  topic: string[];
+  format: string;
+  readMinutes: number;
+  updatedAt: string;
+  popularityScore: number;
+};
+
+export type LensFacetKey = "audience" | "topic" | "format" | "readTime" | "updatedAt";
+
+export type LensFacetOption = {
+  value: string;
+  label: string;
+  count: number;
+  description?: string;
+  isActive?: boolean;
+};
+
+export type LensFacetGroup = {
+  key: LensFacetKey;
+  title: string;
+  type: "multi" | "single";
+  options: LensFacetOption[];
+  helpText?: string;
+  liveRegionLabel?: string;
+};
+
+export type LensFilterState = Partial<Record<LensFacetKey, string[]>>;
+
+export type MegaNavItem = {
+  id: string;
+  label: string;
+  description?: string;
+  href: string;
+  format: string;
+  audience: string[];
+  updatedAt: string;
+  readMinutes: number;
+  badges?: { tone: "neutral" | "info" | "warn"; label: string }[];
+};
+
+export type MegaNavGroup = {
+  id: string;
+  title: string;
+  items: MegaNavItem[];
+};
+
+export type MegaNavPreview = {
+  heading: string;
+  summary?: string;
+  items: { id: string; label: string; href: string; meta?: string }[];
+};
+
+export type MegaNavSection = {
+  id: string;
+  label: string;
+  description?: string;
+  icon?: string;
+  totalItems: number;
+  groups: MegaNavGroup[];
+  preview: MegaNavPreview;
+};
