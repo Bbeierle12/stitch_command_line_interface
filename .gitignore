@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+dist-electron/
+build/
+out/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Test coverage
+coverage/
+
+# Environment files
+.env
+.env.local
+
+# Electron build artifacts
+**/dist-electron/
+**/win-unpacked/
+**/mac/
+**/linux-unpacked/

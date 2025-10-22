@@ -32,7 +32,7 @@ const navItems: NavItem[] = [
     icon: FolderOpen,
     tooltip: 'Browse project files (Ctrl+Shift+E)',
     badge: 3,
-    href: '/'
+    href: '/editor'
   },
   { 
     id: 'pipeline', 
