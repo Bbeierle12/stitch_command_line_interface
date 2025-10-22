@@ -23,6 +23,10 @@ import previewRoutes from './routes/preview';
 import securityRoutes from './routes/security';
 import snapshotsRoutes from './routes/snapshots';
 import systemRoutes from './routes/system';
+import ideRoutes from './routes/ide';
+
+// Import services for initialization
+import { workspaceService } from './services/workspaceService';
 
 const app: Application = express();
 
@@ -60,6 +64,11 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), uptime: process.uptime(), version: process.env.npm_package_version || '1.0.0' });
 });
 
+// Initialize workspace
+workspaceService.initialize().catch(err => {
+  logger.error('Failed to initialize workspace:', err);
+});
+
 // API routes
 app.use('/v1/auth', authRoutes);
 app.use('/v1/ci', ciRoutes);
@@ -73,6 +82,7 @@ app.use('/v1/preview', previewRoutes);
 app.use('/v1/security', securityRoutes);
 app.use('/v1/snapshots', snapshotsRoutes);
 app.use('/v1/system', systemRoutes);
+app.use('/api', ideRoutes); // IDE routes on /api prefix
 
 // 404 handler
 app.use((req, res) => {
