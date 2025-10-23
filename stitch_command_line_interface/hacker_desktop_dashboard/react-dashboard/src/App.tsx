@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { HashRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { TopHud } from "./components/TopHud";
+import { SettingsProvider } from "./contexts/SettingsContext";
+import { SettingsPanel } from "./components/SettingsPanel";
 import { LeftDock } from "./components/LeftDock";
 import { SnapshotRail } from "./components/SnapshotRail";
 import { BottomConsole } from "./components/BottomConsole";
@@ -82,6 +84,7 @@ function AppShell() {
   const [timeMode, setTimeMode] = useState<"live" | "fixed">(config.ui.defaultTimeMode);
   const [previewMode, setPreviewMode] = useState<PreviewMode>(config.ui.defaultPreviewMode);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [notification, setNotification] = useState<string>("");
   const [buildStatus, setBuildStatus] = useState<'idle' | 'building' | 'success' | 'error'>('idle');
 
@@ -242,6 +245,7 @@ function AppShell() {
           onExecute={handleCommand}
         />
       )}
+      <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
       {notification && config.features.enableNotifications && (
         <div
           className="fixed top-20 right-8 z-30 rounded border border-cyan bg-panel px-4 py-2 text-sm text-cyan shadow-depth animate-pulse"
@@ -260,6 +264,7 @@ function AppShell() {
             mode === "live" ? "fixed" : "live"
           )}
         onCommandPalette={() => setPaletteOpen(true)}
+        onSettings={() => setSettingsOpen(true)}
         projectName="stitch-cli"
         branch="main"
         buildStatus={buildStatus}
@@ -322,9 +327,11 @@ function AppShell() {
 
 export default function App() {
   return (
-    <Router>
-      <AppShell />
-    </Router>
+    <SettingsProvider>
+      <Router>
+        <AppShell />
+      </Router>
+    </SettingsProvider>
   );
 }
 
