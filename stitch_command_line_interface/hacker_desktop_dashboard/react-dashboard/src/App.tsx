@@ -308,17 +308,8 @@ function AppShell() {
                 <Route path="/inbox" element={<InboxPage />} />
               </Routes>
             </main>
-            <aside className="w-80 flex flex-col border-l border-hairline">
-              <div className="flex-1 overflow-hidden">
-                <InspectorPanel
-                  title={inspector.title}
-                  summary={inspector.summary}
-                  details={inspector.details}
-                />
-              </div>
-              <div className="flex-1 overflow-hidden border-t border-hairline">
-                <LLMChat />
-              </div>
+            <aside className="w-80 border-l border-hairline">
+              <LLMChat />
             </aside>
           </div>
           <BottomConsole logs={consoleLogs ?? []} />
