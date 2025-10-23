@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Trash2, Sparkles } from 'lucide-react';
+import { Send, Bot, User, Trash2, Sparkles, ChevronDown } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -7,6 +7,26 @@ interface Message {
   content: string;
   timestamp: Date;
 }
+
+type ChatMode = 'ask' | 'agent';
+
+type ModelOption = {
+  id: string;
+  name: string;
+  provider: string;
+  context: string;
+};
+
+const AVAILABLE_MODELS: ModelOption[] = [
+  { id: 'gpt-4', name: 'GPT-4', provider: 'OpenAI', context: '8K' },
+  { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', provider: 'OpenAI', context: '128K' },
+  { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'OpenAI', context: '16K' },
+  { id: 'claude-3-opus', name: 'Claude 3 Opus', provider: 'Anthropic', context: '200K' },
+  { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', provider: 'Anthropic', context: '200K' },
+  { id: 'claude-3-haiku', name: 'Claude 3 Haiku', provider: 'Anthropic', context: '200K' },
+  { id: 'gemini-pro', name: 'Gemini Pro', provider: 'Google', context: '32K' },
+  { id: 'local-llama', name: 'Llama 2 (Local)', provider: 'Self-Hosted', context: '4K' },
+];
 
 export function LLMChat() {
   const [messages, setMessages] = useState<Message[]>([
@@ -19,8 +39,12 @@ export function LLMChat() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [mode, setMode] = useState<ChatMode>('ask');
+  const [selectedModel, setSelectedModel] = useState<string>('gpt-4');
+  const [showModelDropdown, setShowModelDropdown] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -29,6 +53,18 @@ export function LLMChat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowModelDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -44,12 +80,18 @@ export function LLMChat() {
     setInput('');
     setIsLoading(true);
 
+    const currentModel = AVAILABLE_MODELS.find(m => m.id === selectedModel);
+
     // Simulate AI response (replace with actual LLM API call)
     setTimeout(() => {
+      const modeText = mode === 'agent' 
+        ? '\n\n🤖 Agent Mode: I can execute actions and make changes to your code.'
+        : '';
+      
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `I received your message: "${userMessage.content}"\n\nThis is a placeholder response. In a production environment, this would connect to an LLM API (like OpenAI, Claude, or a local model) to provide intelligent responses.`,
+        content: `[Using ${currentModel?.name}]\n\nI received your message: "${userMessage.content}"${modeText}\n\nThis is a placeholder response. In a production environment, this would connect to ${currentModel?.provider} API to provide intelligent responses.`,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, assistantMessage]);
@@ -75,21 +117,105 @@ export function LLMChat() {
     ]);
   };
 
+  const selectedModelInfo = AVAILABLE_MODELS.find(m => m.id === selectedModel);
+
   return (
     <div className="h-full flex flex-col bg-panel/60 border-l border-hairline">
-      {/* Header */}
-      <div className="bg-panel/80 border-b border-hairline px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-cyan" />
-          <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wider">AI Assistant</h3>
+      {/* Header / Navbar */}
+      <div className="bg-panel/80 border-b border-hairline">
+        {/* Top Row: Title and Actions */}
+        <div className="flex items-center justify-between px-4 py-2.5">
+          <div className="flex items-center gap-3">
+            <Sparkles className="w-5 h-5 text-cyan" />
+            <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wider">AI Assistant</h3>
+          </div>
+
+          {/* Mode Toggle in Navbar */}
+          <div className="flex items-center gap-2">
+            <div className="flex bg-panel border border-hairline rounded overflow-hidden">
+              <button
+                onClick={() => setMode('ask')}
+                className={`px-3 py-1.5 text-xs font-medium uppercase tracking-wider transition-colors ${
+                  mode === 'ask'
+                    ? 'bg-cyan text-ink'
+                    : 'text-white/70 hover:text-white hover:bg-hairline'
+                }`}
+                title="Ask questions and get assistance"
+              >
+                💬 Ask
+              </button>
+              <button
+                onClick={() => setMode('agent')}
+                className={`px-3 py-1.5 text-xs font-medium uppercase tracking-wider transition-colors ${
+                  mode === 'agent'
+                    ? 'bg-cyan text-ink'
+                    : 'text-white/70 hover:text-white hover:bg-hairline'
+                }`}
+                title="Autonomous agent mode - can execute actions"
+              >
+                🤖 Agent
+              </button>
+            </div>
+
+            <button
+              onClick={clearChat}
+              className="p-1.5 hover:bg-hairline rounded transition-colors"
+              title="Clear chat"
+            >
+              <Trash2 className="w-4 h-4 text-white/60 hover:text-white" />
+            </button>
+          </div>
         </div>
-        <button
-          onClick={clearChat}
-          className="p-1.5 hover:bg-hairline rounded transition-colors"
-          title="Clear chat"
-        >
-          <Trash2 className="w-4 h-4 text-white/60 hover:text-white" />
-        </button>
+
+        {/* Bottom Row: Model Selector */}
+        <div className="px-4 pb-3">
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setShowModelDropdown(!showModelDropdown)}
+              className="w-full flex items-center justify-between gap-2 px-3 py-2 bg-panel border border-hairline rounded text-sm text-white/90 hover:border-cyan transition-colors"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <Bot className="w-4 h-4 text-cyan flex-shrink-0" />
+                <span className="font-medium">{selectedModelInfo?.name}</span>
+                <span className="text-xs text-white/50">• {selectedModelInfo?.context} context</span>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-white/60 flex-shrink-0 transition-transform ${showModelDropdown ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Model Dropdown */}
+            {showModelDropdown && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-panel border border-hairline rounded shadow-depth max-h-72 overflow-y-auto z-50 scrollbar-thin">
+                {AVAILABLE_MODELS.map((model) => (
+                  <button
+                    key={model.id}
+                    onClick={() => {
+                      setSelectedModel(model.id);
+                      setShowModelDropdown(false);
+                    }}
+                    className={`w-full flex items-start gap-2 px-3 py-2 text-left transition-colors ${
+                      selectedModel === model.id
+                        ? 'bg-cyan/10 text-cyan'
+                        : 'text-white/80 hover:bg-hairline'
+                    }`}
+                  >
+                    <Bot className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">{model.name}</span>
+                        {selectedModel === model.id && (
+                          <span className="text-xs px-1.5 py-0.5 bg-cyan/20 rounded">✓</span>
+                        )}
+                      </div>
+                      <div className="text-xs text-white/50 mt-0.5">
+                        {model.provider} • {model.context} context
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Messages */}
