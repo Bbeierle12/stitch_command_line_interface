@@ -21,13 +21,6 @@ interface ControlButton {
   variant?: 'primary' | 'secondary' | 'success';
 }
 
-interface ConsoleLog {
-  id: string;
-  type: 'log' | 'error' | 'warn' | 'info' | 'success';
-  message: string;
-  timestamp: string;
-}
-
 export function LiveCodeEditor() {
   // Editor state
   const [code, setCode] = useState(`<!DOCTYPE html>
@@ -91,14 +84,71 @@ export function LiveCodeEditor() {
   const [previewKey, setPreviewKey] = useState(0);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [consoleLogs, setConsoleLogs] = useState<ConsoleLog[]>([
-    { id: '1', type: 'info', message: 'Editor ready. Start coding!', timestamp: new Date().toLocaleTimeString() }
-  ]);
+  const [editorHeight, setEditorHeight] = useState(50); // Percentage
+  const [isResizingVertical, setIsResizingVertical] = useState(false);
 
   // Refs
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const consoleRef = useRef<HTMLDivElement>(null);
+  const editorContainerRef = useRef<HTMLDivElement>(null);
+
+  // Handle fullscreen toggle
+  const toggleFullscreen = () => {
+    if (!isFullscreen) {
+      // Enter fullscreen
+      if (editorContainerRef.current) {
+        if (editorContainerRef.current.requestFullscreen) {
+          editorContainerRef.current.requestFullscreen();
+        }
+      }
+      setIsFullscreen(true);
+    } else {
+      // Exit fullscreen
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      }
+      setIsFullscreen(false);
+    }
+  };
+
+  // Listen for fullscreen changes (ESC key, etc)
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
+  // Handle vertical resize (editor height)
+  useEffect(() => {
+    if (!isResizingVertical) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (editorContainerRef.current) {
+        const containerRect = editorContainerRef.current.getBoundingClientRect();
+        const newHeight = ((e.clientY - containerRect.top) / containerRect.height) * 100;
+        setEditorHeight(Math.min(Math.max(newHeight, 20), 80)); // Limit between 20% and 80%
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizingVertical(false);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizingVertical]);
+
+
 
   // Auto-refresh preview when code changes
   useEffect(() => {
@@ -111,21 +161,9 @@ export function LiveCodeEditor() {
     }
   }, [code, autoRefresh, language]);
 
-  // Scroll console to bottom on new logs
-  useEffect(() => {
-    if (consoleRef.current) {
-      consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
-    }
-  }, [consoleLogs]);
-
-  const addLog = (type: ConsoleLog['type'], message: string) => {
-    const newLog: ConsoleLog = {
-      id: Date.now().toString(),
-      type,
-      message,
-      timestamp: new Date().toLocaleTimeString()
-    };
-    setConsoleLogs(prev => [...prev, newLog]);
+  const addLog = (type: 'log' | 'error' | 'warn' | 'info' | 'success', message: string) => {
+    // Logs will be sent to Console Tail instead
+    console.log(`[${type.toUpperCase()}] ${message}`);
   };
 
   const refreshPreview = () => {
@@ -221,10 +259,6 @@ export function LiveCodeEditor() {
     refreshPreview();
   };
 
-  const clearConsole = () => {
-    setConsoleLogs([]);
-  };
-
   // Listen for console messages from iframe
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -248,28 +282,8 @@ export function LiveCodeEditor() {
     { id: 'refresh', label: 'Refresh', icon: RefreshCw, action: refreshPreview, variant: 'secondary' },
   ];
 
-  const getLogColor = (type: ConsoleLog['type']) => {
-    switch (type) {
-      case 'error': return 'text-red-400';
-      case 'warn': return 'text-yellow-400';
-      case 'info': return 'text-cyan';
-      case 'success': return 'text-ops-green';
-      default: return 'text-white/90';
-    }
-  };
-
-  const getLogPrefix = (type: ConsoleLog['type']) => {
-    switch (type) {
-      case 'error': return '❌';
-      case 'warn': return '⚠️';
-      case 'info': return 'ℹ️';
-      case 'success': return '✅';
-      default: return '>';
-    }
-  };
-
   return (
-    <div className="flex h-full w-full bg-ink">
+    <div ref={editorContainerRef} className="flex h-full w-full bg-ink">
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -341,7 +355,7 @@ export function LiveCodeEditor() {
         {/* Preview Controls */}
         <div className="mt-auto pt-4 border-t border-hairline">
           <button
-            onClick={() => setIsFullscreen(!isFullscreen)}
+            onClick={toggleFullscreen}
             className="w-full flex items-center gap-2 px-3 py-2 bg-panel hover:bg-hairline border border-hairline rounded text-sm text-white/70 hover:text-white transition-colors"
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -353,7 +367,10 @@ export function LiveCodeEditor() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
         {/* Editor */}
-        <div className={`${isFullscreen ? 'h-full' : 'h-1/2'} border-b border-hairline`}>
+        <div 
+          className="border-b border-hairline relative" 
+          style={{ height: isFullscreen ? '100%' : `${editorHeight}%` }}
+        >
           <div className="h-full flex flex-col">
             <div className="bg-panel/60 border-b border-hairline px-4 py-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -386,12 +403,25 @@ export function LiveCodeEditor() {
               />
             </div>
           </div>
+          
+          {/* Horizontal Resize Handle */}
+          {!isFullscreen && (
+            <div
+              className="absolute bottom-0 left-0 right-0 h-1 bg-hairline hover:bg-cyan cursor-ns-resize z-10 transition-colors"
+              onMouseDown={() => setIsResizingVertical(true)}
+            >
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-1 bg-cyan/50 rounded-full"></div>
+            </div>
+          )}
         </div>
 
-        {/* Bottom Section - Split between Preview and Console */}
-        <div className={`${isFullscreen ? 'hidden' : 'h-1/2'} flex`}>
+        {/* Bottom Section - Live Preview (Full Width) */}
+        <div 
+          className={`${isFullscreen ? 'hidden' : ''} relative`}
+          style={{ height: isFullscreen ? '0%' : `${100 - editorHeight}%` }}
+        >
           {/* Live Preview */}
-          <div className="flex-1 border-r border-hairline">
+          <div className="h-full">
             <div className="h-full flex flex-col">
               <div className="bg-panel/60 border-b border-hairline px-4 py-2 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -422,33 +452,6 @@ export function LiveCodeEditor() {
                     </div>
                   </div>
                 )}
-              </div>
-            </div>
-          </div>
-
-          {/* Console/Terminal */}
-          <div className="w-96 bg-black">
-            <div className="h-full flex flex-col">
-              <div className="bg-gray-900 border-b border-gray-800 px-4 py-2 flex items-center justify-between">
-                <span className="text-xs text-ops-green uppercase tracking-wider font-mono">Console</span>
-                <button
-                  onClick={clearConsole}
-                  className="text-xs text-white/60 hover:text-white px-2 py-1 hover:bg-gray-800 rounded transition-colors"
-                >
-                  Clear
-                </button>
-              </div>
-              <div
-                ref={consoleRef}
-                className="flex-1 p-3 overflow-y-auto font-mono text-xs scrollbar-thin"
-              >
-                {consoleLogs.map((log) => (
-                  <div key={log.id} className={`mb-1 ${getLogColor(log.type)}`}>
-                    <span className="text-white/40">[{log.timestamp}]</span>{' '}
-                    <span>{getLogPrefix(log.type)}</span>{' '}
-                    <span>{log.message}</span>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
