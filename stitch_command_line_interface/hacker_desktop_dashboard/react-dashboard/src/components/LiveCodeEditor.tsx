@@ -275,10 +275,10 @@ export function LiveCodeEditor() {
     return () => window.removeEventListener('message', handleMessage);
   }, []);
 
-  const sidebarControls: ControlButton[] = [
-    { id: 'run', label: 'Run Code', icon: Play, action: handleRun, variant: 'primary' },
-    { id: 'save', label: 'Save File', icon: Save, action: handleSave, variant: 'secondary' },
-    { id: 'upload', label: 'Upload File', icon: Upload, action: () => fileInputRef.current?.click(), variant: 'secondary' },
+  const editorControls: ControlButton[] = [
+    { id: 'run', label: 'Run', icon: Play, action: handleRun, variant: 'primary' },
+    { id: 'save', label: 'Save', icon: Save, action: handleSave, variant: 'secondary' },
+    { id: 'upload', label: 'Upload', icon: Upload, action: () => fileInputRef.current?.click(), variant: 'secondary' },
     { id: 'refresh', label: 'Refresh', icon: RefreshCw, action: refreshPreview, variant: 'secondary' },
   ];
 
@@ -293,78 +293,7 @@ export function LiveCodeEditor() {
         className="hidden"
       />
 
-      {/* Sidebar Controls */}
-      <aside className="w-64 bg-panel/60 border-r border-hairline p-4 flex flex-col gap-4">
-        <div className="flex items-center gap-2 mb-2">
-          <FileCode className="w-5 h-5 text-cyan" />
-          <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wider">Controls</h3>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="space-y-2">
-          {sidebarControls.map((control) => {
-            const Icon = control.icon;
-            return (
-              <button
-                key={control.id}
-                onClick={control.action}
-                className={`
-                  w-full flex items-center gap-3 px-4 py-2.5 rounded transition-all
-                  ${control.variant === 'primary' 
-                    ? 'bg-cyan hover:bg-cyan/90 text-ink border border-cyan' 
-                    : 'bg-panel hover:bg-hairline text-white/80 border border-hairline hover:border-cyan'
-                  }
-                `}
-              >
-                <Icon className="w-4 h-4" />
-                <span className="text-sm font-medium">{control.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Language Selector */}
-        <div className="mt-4">
-          <label className="text-xs text-white/60 uppercase tracking-wider mb-2 block">Language</label>
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as any)}
-            className="w-full bg-panel border border-hairline text-white/90 px-3 py-2 rounded text-sm focus:border-cyan outline-none"
-          >
-            <option value="html">HTML</option>
-            <option value="javascript">JavaScript</option>
-            <option value="typescript">TypeScript</option>
-            <option value="css">CSS</option>
-            <option value="python">Python</option>
-          </select>
-        </div>
-
-        {/* Settings */}
-        <div className="mt-4 pt-4 border-t border-hairline">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={autoRefresh}
-              onChange={(e) => setAutoRefresh(e.target.checked)}
-              className="w-4 h-4 accent-cyan"
-            />
-            <span className="text-xs text-white/70">Auto-refresh preview</span>
-          </label>
-        </div>
-
-        {/* Preview Controls */}
-        <div className="mt-auto pt-4 border-t border-hairline">
-          <button
-            onClick={toggleFullscreen}
-            className="w-full flex items-center gap-2 px-3 py-2 bg-panel hover:bg-hairline border border-hairline rounded text-sm text-white/70 hover:text-white transition-colors"
-          >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-            <span>{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content Area */}
+      {/* Main Content Area - Editor and Preview */}
       <div className="flex-1 flex flex-col">
         {/* Editor */}
         <div 
@@ -372,15 +301,75 @@ export function LiveCodeEditor() {
           style={{ height: isFullscreen ? '100%' : `${editorHeight}%` }}
         >
           <div className="h-full flex flex-col">
-            <div className="bg-panel/60 border-b border-hairline px-4 py-2 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-ops-green"></div>
-                <span className="ml-4 text-xs text-white/60 uppercase tracking-wider">Editor</span>
+            {/* Editor Navbar with Controls */}
+            <div className="bg-panel/60 border-b border-hairline px-4 py-2 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-ops-green"></div>
+                </div>
+                <span className="text-xs text-white/60 uppercase tracking-wider border-l border-hairline pl-3">Editor</span>
+                
+                {/* Control Buttons */}
+                <div className="flex items-center gap-2 border-l border-hairline pl-3">
+                  {editorControls.map((control) => {
+                    const Icon = control.icon;
+                    return (
+                      <button
+                        key={control.id}
+                        onClick={control.action}
+                        title={control.label}
+                        className={`
+                          flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-all
+                          ${control.variant === 'primary' 
+                            ? 'bg-cyan hover:bg-cyan/90 text-ink border border-cyan' 
+                            : 'bg-panel hover:bg-hairline text-white/80 border border-hairline hover:border-cyan'
+                          }
+                        `}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">{control.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="text-xs text-white/60">
-                {language.toUpperCase()}
+              
+              {/* Right Side Controls */}
+              <div className="flex items-center gap-3">
+                {/* Language Selector */}
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value as any)}
+                  className="bg-panel border border-hairline text-white/90 px-2 py-1 rounded text-xs focus:border-cyan outline-none"
+                >
+                  <option value="html">HTML</option>
+                  <option value="javascript">JavaScript</option>
+                  <option value="typescript">TypeScript</option>
+                  <option value="css">CSS</option>
+                  <option value="python">Python</option>
+                </select>
+                
+                {/* Auto-refresh Toggle */}
+                <label className="flex items-center gap-1.5 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={autoRefresh}
+                    onChange={(e) => setAutoRefresh(e.target.checked)}
+                    className="w-3.5 h-3.5 accent-cyan"
+                  />
+                  <span className="text-xs text-white/60 group-hover:text-white/80">Auto</span>
+                </label>
+                
+                {/* Fullscreen Button */}
+                <button
+                  onClick={toggleFullscreen}
+                  title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+                  className="p-1.5 hover:bg-hairline rounded transition-colors"
+                >
+                  {isFullscreen ? <Minimize2 className="w-4 h-4 text-white/60" /> : <Maximize2 className="w-4 h-4 text-white/60" />}
+                </button>
               </div>
             </div>
             <div className="flex-1">

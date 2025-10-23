@@ -5,6 +5,7 @@ import { LeftDock } from "./components/LeftDock";
 import { SnapshotRail } from "./components/SnapshotRail";
 import { BottomConsole } from "./components/BottomConsole";
 import { InspectorPanel } from "./components/InspectorPanel";
+import { LLMChat } from "./components/LLMChat";
 import { MegaLens } from "./components/MegaLens";
 import { CommandPalette } from "./components/CommandPalette";
 import { ElectronStatus } from "./components/ElectronStatus";
@@ -306,12 +307,19 @@ function AppShell() {
                 <Route path="/network" element={<NetworkPage />} />
                 <Route path="/inbox" element={<InboxPage />} />
               </Routes>
-              <InspectorPanel
-                title={inspector.title}
-                summary={inspector.summary}
-                details={inspector.details}
-              />
             </main>
+            <aside className="w-80 flex flex-col border-l border-hairline">
+              <div className="flex-1 overflow-hidden">
+                <InspectorPanel
+                  title={inspector.title}
+                  summary={inspector.summary}
+                  details={inspector.details}
+                />
+              </div>
+              <div className="flex-1 overflow-hidden border-t border-hairline">
+                <LLMChat />
+              </div>
+            </aside>
           </div>
           <BottomConsole logs={consoleLogs ?? []} />
         </div>
