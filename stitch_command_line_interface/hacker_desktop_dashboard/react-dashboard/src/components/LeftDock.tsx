@@ -13,6 +13,7 @@ import {
   Monitor,
   Network,
   Map,
+  Settings,
   type LucideIcon
 } from 'lucide-react';
 
@@ -24,6 +25,7 @@ interface NavItem {
   badge?: number;
   href?: string;
   children?: NavItem[];
+  action?: () => void;
 }
 
 interface SavedView {
@@ -62,6 +64,12 @@ const navItems: NavItem[] = [
     tooltip: 'Task runner and scripts (Ctrl+Shift+T)',
     badge: 2,
     href: '/inbox'
+  },
+  {
+    id: 'settings',
+    label: 'Settings',
+    icon: Settings,
+    tooltip: 'Configure workspace, editor, and system (Ctrl+,)',
   }
 ];
 
@@ -103,7 +111,7 @@ const categoryItems: NavItem[] = [
   }
 ];
 
-export function LeftDock() {
+export function LeftDock({ onOpenSettings }: { onOpenSettings?: () => void }) {
   const [activeTab, setActiveTab] = useState('explorer');
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -114,6 +122,13 @@ export function LeftDock() {
 
   const handleNavClick = (item: NavItem) => {
     setActiveTab(item.id);
+    
+    // Handle settings action
+    if (item.id === 'settings' && onOpenSettings) {
+      onOpenSettings();
+      return;
+    }
+    
     if (item.href) {
       // Navigation will be handled by parent component via href
       window.location.hash = item.href;

@@ -270,7 +270,7 @@ function AppShell() {
         buildStatus={buildStatus}
       />
       <div className="flex flex-1 overflow-hidden">
-        <LeftDock />
+        <LeftDock onOpenSettings={() => setSettingsOpen(true)} />
         <div className="relative flex flex-1 flex-col">
           <SnapshotRail
             snapshots={snapshots}
