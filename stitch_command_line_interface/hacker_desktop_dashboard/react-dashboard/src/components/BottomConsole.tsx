@@ -1,24 +1,54 @@
-import { useState } from "react";
-
-type LogLine = {
-  id: number;
-  tag: string;
-  message: string;
-  ts: string;
-};
-
-type BottomConsoleProps = {
-  logs: LogLine[];
-};
+import { useState, useRef, KeyboardEvent } from "react";
+import { useConsole } from "../contexts/ConsoleContext";
+import { VirtualizedConsole } from "./VirtualizedConsole";
+import { useDebouncedCallback } from "../hooks/usePerformance";
 
 type TerminalType = "cmd" | "powershell";
 
-export function BottomConsole({ logs }: BottomConsoleProps) {
+export function BottomConsole() {
+  const { logs, addLog, clearLogs } = useConsole();
   const [activeTerminal, setActiveTerminal] = useState<TerminalType>("powershell");
+  const [command, setCommand] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const consoleHeight = 160 - 80; // Total height minus header/input areas
+
+  // Debounced command execution to prevent spam
+  const executeDebouncedCommand = useDebouncedCallback((cmd: string) => {
+    // Mock responses for demo purposes
+    if (cmd.toLowerCase().includes('dir') || cmd.toLowerCase().includes('ls')) {
+      addLog('INFO', 'Directory listing: src/ components/ package.json', activeTerminal.toUpperCase());
+    } else if (cmd.toLowerCase().includes('help')) {
+      addLog('INFO', 'Available commands: help, dir, ls, clear, npm', activeTerminal.toUpperCase());
+    } else if (cmd.toLowerCase().includes('clear')) {
+      clearLogs();
+    } else if (cmd.toLowerCase().includes('npm')) {
+      addLog('INFO', 'npm command would execute in real terminal', activeTerminal.toUpperCase());
+    } else {
+      addLog('WARN', `Command not recognized: ${cmd}`, activeTerminal.toUpperCase());
+    }
+  }, 100);
+
+  const handleSendCommand = () => {
+    if (!command.trim()) return;
+
+    // Add command to logs
+    addLog('INFO', `> ${command}`, activeTerminal.toUpperCase());
+ 
+    // Execute with debounce
+    executeDebouncedCommand(command);
+    setCommand("");
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSendCommand();
+    }
+  };
 
   return (
     <footer className="border-t border-hairline bg-panel/80">
       <div className="flex h-40 flex-col">
+        {/* Header */}
         <div className="flex items-center justify-between border-b border-hairline px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-white/50">
           <div className="flex items-center gap-2">
             <span>Console Tail</span>
@@ -45,32 +75,37 @@ export function BottomConsole({ logs }: BottomConsoleProps) {
               </button>
             </div>
           </div>
-          <button className="rounded border border-transparent px-2 py-1 text-xs text-white/60 transition hover:border-cyan hover:text-cyan">
-            Detach to inspector
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto px-4 py-3 font-mono text-xs text-white/80 scrollbar-thin">
-          <div className="mb-2 text-[10px] uppercase tracking-[0.2em] text-white/40">
-            {activeTerminal === "cmd" ? "Command Prompt" : "Windows PowerShell"}
+          <div className="flex items-center gap-2">
+            <span className="text-white/40">{logs.length} entries</span>
+            <button 
+              onClick={clearLogs}
+              className="rounded border border-transparent px-2 py-1 text-xs text-white/60 transition hover:border-cyan hover:text-cyan"
+            >
+              Clear
+            </button>
           </div>
-          {logs.map((line) => (
-            <div key={line.id} className="flex items-center gap-3 py-1">
-              <span className="rounded border border-hairline px-2 py-0.5 text-[10px] tracking-[0.16em] text-white/50">
-                {line.tag}
-              </span>
-              <span className="text-white/50">{line.ts}</span>
-              <span className={line.tag === "ERROR" ? "text-danger" : line.tag === "WARN" ? "text-warn" : ""}>
-                {line.message}
-              </span>
-            </div>
-          ))}
         </div>
+
+        {/* Virtualized Console Logs */}
+        <div className="flex-1 font-mono text-xs text-white/80">
+          <VirtualizedConsole 
+            logs={logs} 
+            height={consoleHeight}
+            itemHeight={32}
+          />
+        </div>
+
+        {/* Command Input */}
         <div className="flex items-center gap-3 border-t border-hairline px-4 py-2">
           <span className="text-xs uppercase tracking-[0.2em] text-white/40">
             {activeTerminal === "cmd" ? "C:\\>" : "PS>"}
           </span>
           <input
+            ref={inputRef}
             type="text"
+            value={command}
+            onChange={(e) => setCommand(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder={
               activeTerminal === "cmd" 
                 ? "> dir /s /b *.log" 
@@ -78,7 +113,10 @@ export function BottomConsole({ logs }: BottomConsoleProps) {
             }
             className="w-full rounded border border-hairline bg-transparent px-3 py-1 text-sm text-white/80 outline-none transition focus:border-cyan"
           />
-          <button className="rounded border border-cyan px-3 py-1 text-xs uppercase tracking-[0.16em] text-cyan transition hover:bg-cyan/10">
+          <button 
+            onClick={handleSendCommand}
+            className="rounded border border-cyan px-3 py-1 text-xs uppercase tracking-[0.16em] text-cyan transition hover:bg-cyan/10"
+          >
             Send
           </button>
         </div>

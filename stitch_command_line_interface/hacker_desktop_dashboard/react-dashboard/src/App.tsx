@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { HashRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { TopHud } from "./components/TopHud";
 import { SettingsProvider } from "./contexts/SettingsContext";
+import { ConsoleProvider, useConsole } from "./contexts/ConsoleContext";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { LeftDock } from "./components/LeftDock";
 import { SnapshotRail } from "./components/SnapshotRail";
@@ -81,6 +82,7 @@ const securitySeed: SecState = {
 
 function AppShell() {
   const navigate = useNavigate();
+  const { addLog } = useConsole();
   const [timeMode, setTimeMode] = useState<"live" | "fixed">(config.ui.defaultTimeMode);
   const [previewMode, setPreviewMode] = useState<PreviewMode>(config.ui.defaultPreviewMode);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -91,15 +93,35 @@ function AppShell() {
   // Real-time data polling with configurable intervals
   const isLive = timeMode === "live" && config.features.enablePolling;
   
+  // WebSocket log streaming
+  const { data: wsLogData, isConnected: wsLogConnected } = useLogStream();
+  
+  // Handle incoming WebSocket logs
+  useEffect(() => {
+    if (wsLogData && wsLogConnected) {
+      const tag = wsLogData.level?.toUpperCase() as 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
+   addLog(tag || 'INFO', wsLogData.message, 'WebSocket');
+    }
+  }, [wsLogData, wsLogConnected, addLog]);
+
+  // Log WebSocket connection status
+  useEffect(() => {
+    if (wsLogConnected) {
+  addLog('SUCCESS', 'WebSocket connected - streaming logs', 'WebSocket');
+    } else {
+      addLog('WARN', 'WebSocket disconnected - using polling fallback', 'WebSocket');
+    }
+  }, [wsLogConnected, addLog]);
+  
   // Wrap fetch functions in useCallback to prevent infinite loops
   const fetchCiState = useCallback(async () => {
     try {
       return await backendApiService.getCiState();
     } catch {
-      // fallback to mock
       return dataService.getCiState();
     }
   }, []);
+  
   const fetchSecState = useCallback(async () => {
     try {
       return await backendApiService.getSecState();
@@ -107,6 +129,7 @@ function AppShell() {
       return dataService.getSecurityState();
     }
   }, []);
+  
   const fetchSystemMetrics = useCallback(async () => {
     try {
       const sys = await backendApiService.getSystemMetrics();
@@ -114,26 +137,17 @@ function AppShell() {
         { label: "CPU", value: `${sys.cpu.usage}%`, accent: "text-cyan" },
         { label: "RAM", value: `${Math.round((sys.memory.used / sys.memory.total) * 100)}%`, accent: "text-cyan" },
         { label: "Temp", value: `${sys.cpu.temperature}°C`, accent: sys.cpu.temperature > 75 ? "text-warn" : undefined },
-        { label: "Battery", value: sys.battery.charging ? `AC / ${sys.battery.percentage}%` : `${sys.battery.percentage}%` },
-      ];
+      { label: "Battery", value: sys.battery.charging ? `AC / ${sys.battery.percentage}%` : `${sys.battery.percentage}%` },
+ ];
       return metrics;
     } catch {
       return dataService.getSystemMetrics();
-    }
-  }, []);
-  const fetchConsoleLogs = useCallback(async () => {
-    try {
-      const res = await backendApiService.getConsoleLogs(8);
-      return res.logs.map(l => ({ id: l.id, tag: l.tag, message: l.message, ts: new Date(l.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) }));
-    } catch {
-      return dataService.getConsoleLogs();
     }
   }, []);
   
   const ciState = usePolling(fetchCiState, config.polling.ci, isLive);
   const secState = usePolling(fetchSecState, config.polling.security, isLive);
   const systemMetrics = usePolling(fetchSystemMetrics, config.polling.system, isLive);
-  const consoleLogs = usePolling(fetchConsoleLogs, config.polling.console, isLive);
 
   const fetchPreview = useCallback(async () => {
     try {
@@ -142,27 +156,30 @@ function AppShell() {
       return dataService.getPreviewState(previewMode);
     }
   }, [previewMode]);
-  // Slow polling as fallback (WebSocket is primary in PreviewCard)
+  
   const previewState = usePolling(fetchPreview, config.polling.preview, isLive);
 
   // Update build status based on CI state
   useEffect(() => {
     if (ciState?.build) {
-      switch(ciState.build.status) {
+   switch(ciState.build.status) {
         case 'running':
-          setBuildStatus('building');
+       setBuildStatus('building');
+          addLog('INFO', 'Build started', 'CI');
           break;
         case 'pass':
           setBuildStatus('success');
+     addLog('SUCCESS', 'Build completed successfully', 'CI');
           break;
-        case 'fail':
-          setBuildStatus('error');
-          break;
+      case 'fail':
+    setBuildStatus('error');
+          addLog('ERROR', 'Build failed', 'CI');
+     break;
         default:
           setBuildStatus('idle');
       }
     }
-  }, [ciState]);
+  }, [ciState, addLog]);
 
   const snapshots = useMemo(
     () => [
@@ -201,30 +218,41 @@ function AppShell() {
       setTimeout(() => setNotification(""), config.ui.notificationDuration);
     }
     
-    console.log(`[Command] ${cmd.id}:`, cmd.label);
+    addLog('INFO', `Executing command: ${cmd.label}`, 'Command');
     
     // Execute via Electron if available
     if (electronService.isElectronApp()) {
-      try {
+   try {
         const result = await electronService.executeCommand(cmd);
-        console.log('[Electron] Command result:', result);
         if (result.success && result.output) {
-          console.log('[Electron] Output:', result.output);
+addLog('SUCCESS', result.output, 'Command');
         }
-        if (result.error) {
-          console.error('[Electron] Error:', result.error);
+ if (result.error) {
+          addLog('ERROR', result.error, 'Command');
         }
       } catch (error) {
-        console.error('[Electron] Failed to execute command:', error);
+        addLog('ERROR', `Failed to execute command: ${error}`, 'Command');
       }
+    } else {
+      // Try backend API for command execution
+      try {
+     const response = await backendApiService.executeCommand(cmd);
+   if (response.success) {
+          addLog('SUCCESS', response.output || 'Command executed', 'Backend');
+ } else {
+          addLog('ERROR', response.error || 'Command failed', 'Backend');
+        }
+ } catch (error) {
+        addLog('WARN', 'Neither Electron nor backend available - command simulation only', 'Command');
     }
-  }, []);
+    }
+  }, [addLog]);
 
   const handleLensNavigate = useCallback(
     (href: string) => {
       if (!href) return;
       if (href === "#/" || href === "#") {
-        navigate("/");
+     navigate("/");
         return true;
       }
       if (href.startsWith("#/")) {
@@ -317,7 +345,7 @@ function AppShell() {
               <LLMChat />
             </aside>
           </div>
-          <BottomConsole logs={consoleLogs ?? []} />
+          <BottomConsole />
         </div>
         <ElectronStatus />
       </div>
@@ -328,9 +356,11 @@ function AppShell() {
 export default function App() {
   return (
     <SettingsProvider>
-      <Router>
-        <AppShell />
-      </Router>
+      <ConsoleProvider>
+        <Router>
+          <AppShell />
+        </Router>
+      </ConsoleProvider>
     </SettingsProvider>
   );
 }

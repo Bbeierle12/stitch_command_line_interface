@@ -59,6 +59,7 @@ export interface Snapshot {
 export interface CommandResult {
   success: boolean;
   output?: string;
+  error?: string;
   preview?: string;
   risk?: string;
   estimatedDuration?: number;
@@ -170,12 +171,12 @@ class BackendApiService {
   /**
    * Execute command
    */
-  async executeCommand(
-    commandId: string,
-    args: string[] = [],
-    dryRun = false
-  ): Promise<CommandResult> {
-    return await apiClient.post('/commands/execute', { commandId, args, dryRun });
+  async executeCommand(cmd: { id: string; label: string; risk?: string }, dryRun = false): Promise<CommandResult> {
+    return await apiClient.post('/commands/execute', { 
+      commandId: cmd.id, 
+    args: [], 
+      dryRun 
+    });
   }
 
   /**

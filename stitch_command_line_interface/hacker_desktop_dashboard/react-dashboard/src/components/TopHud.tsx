@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { wsClient } from '../services/wsClient';
 import { 
   GitBranch, 
   Wifi, 
@@ -36,11 +37,39 @@ export function TopHud({
   branch = 'main',
   buildStatus = 'idle'
 }: HUDProps) {
-  const [isConnected, setIsConnected] = useState(true);
+  const [isConnected, setIsConnected] = useState(wsClient.isConnected());
   const [selectedDate, setSelectedDate] = useState(() => {
     const now = new Date();
     return now.toISOString().slice(0, 16);
   });
+
+  // Monitor WebSocket connection status
+  useEffect(() => {
+    const updateConnectionStatus = () => {
+  setIsConnected(wsClient.isConnected());
+    };
+
+    const unsubConnect = wsClient.onConnect(updateConnectionStatus);
+    const unsubDisconnect = wsClient.onDisconnect(updateConnectionStatus);
+
+    // Initial connection attempt
+ if (!wsClient.isConnected()) {
+      wsClient.connect();
+    }
+
+    return () => {
+      unsubConnect();
+      unsubDisconnect();
+    };
+}, []);
+
+  const handleConnectionToggle = () => {
+    if (isConnected) {
+      wsClient.disconnect();
+    } else {
+  wsClient.connect();
+    }
+  };
 
   const getBuildStatusIndicator = () => {
     switch(buildStatus) {
@@ -139,49 +168,49 @@ export function TopHud({
           </div>
         )}
 
-        {/* Connection Status */}
+{/* Connection Status - Now real */}
         <button
-          onClick={() => setIsConnected(!isConnected)}
+          onClick={handleConnectionToggle}
           className={`
-            p-2 rounded transition-colors border
-            ${isConnected 
-              ? 'text-ops-green border-hairline hover:bg-ops-green/10' 
-              : 'text-danger border-danger hover:bg-danger/10'
-            }
-          `}
-          aria-label={isConnected ? 'Connected to remote' : 'Disconnected'}
-          title={isConnected ? 'Remote connection active' : 'No remote connection'}
-        >
+   p-2 rounded transition-colors border
+       ${isConnected 
+     ? 'text-ops-green border-hairline hover:bg-ops-green/10' 
+           : 'text-danger border-danger hover:bg-danger/10'
+     }
+  `}
+      aria-label={isConnected ? 'Connected to backend - click to disconnect' : 'Disconnected - click to connect'}
+        title={isConnected ? 'Backend connected (click to disconnect)' : 'Backend disconnected (click to reconnect)'}
+>
           {isConnected ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
-        </button>
+ </button>
 
-        {/* Command Palette */}
-        <button
+    {/* Command Palette */}
+  <button
           onClick={onCommandPalette}
-          className="flex items-center gap-2 px-3 py-1 bg-cyan/10 hover:bg-cyan/20 border border-cyan rounded transition-colors group"
-          aria-label="Open command palette (Alt+Space)"
-          title="Command Palette (Alt+Space)"
+   className="flex items-center gap-2 px-3 py-1 bg-cyan/10 hover:bg-cyan/20 border border-cyan rounded transition-colors group"
+     aria-label="Open command palette (Alt+Space)"
+    title="Command Palette (Alt+Space)"
         >
-          <Terminal className="w-4 h-4 text-cyan" />
+<Terminal className="w-4 h-4 text-cyan" />
           <span className="text-xs text-cyan font-medium uppercase tracking-[0.14em]">Cmd</span>
           <kbd className="text-[10px] text-cyan/80 bg-ink/60 px-1.5 py-0.5 rounded border border-cyan/30">
             Alt+Space
-          </kbd>
-        </button>
+      </kbd>
+     </button>
 
         {/* Settings */}
-        {onSettings && (
+  {onSettings && (
           <button
-            onClick={onSettings}
-            className="p-2 hover:bg-hairline border border-hairline rounded transition-colors"
-            aria-label="Open settings"
-            title="Settings"
+    onClick={onSettings}
+  className="p-2 hover:bg-hairline border border-hairline rounded transition-colors"
+ aria-label="Open settings"
+    title="Settings"
           >
             <svg className="w-4 h-4 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </button>
+         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+     </button>
         )}
       </div>
     </header>

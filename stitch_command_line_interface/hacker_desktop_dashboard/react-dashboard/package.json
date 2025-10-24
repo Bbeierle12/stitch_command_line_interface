@@ -11,7 +11,11 @@
     "vite:start": "vite --port 5173",
     "electron:dev": "concurrently \"npm run vite:start\" \"node electron-start.cjs\"",
     "electron:build": "vite build && electron-builder",
-    "electron:start": "electron ."
+    "electron:start": "electron .",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "build": {
     "appId": "com.cyberops.dashboard",
@@ -58,18 +62,30 @@
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/lodash.debounce": "^4.0.9",
+    "@types/node": "^24.9.1",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
+    "@types/react-window": "^1.8.8",
     "@vitejs/plugin-react": "^4.3.2",
+    "@vitest/ui": "^4.0.3",
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
     "electron": "^38.3.0",
     "electron-builder": "^26.0.12",
+    "eslint": "^9.38.0",
+    "jsdom": "^27.0.1",
+    "lodash.debounce": "^4.0.8",
     "postcss": "^8.4.39",
+    "react-window": "^2.2.1",
     "tailwindcss": "^3.4.13",
     "typescript": "^5.5.4",
     "vite": "^5.4.2",
+    "vitest": "^4.0.3",
     "wait-on": "^9.0.1"
   }
 }

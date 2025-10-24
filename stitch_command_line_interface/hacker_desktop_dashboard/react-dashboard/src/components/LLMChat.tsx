@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Trash2, Sparkles, ChevronDown } from 'lucide-react';
+import { useConsole } from '../contexts/ConsoleContext';
+import { llmService } from '../services/llmService';
 
 interface Message {
   id: string;
@@ -29,19 +31,23 @@ const AVAILABLE_MODELS: ModelOption[] = [
 ];
 
 export function LLMChat() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'Hello! I\'m your AI coding assistant. I can help you with:\n\n• Code generation and refactoring\n• Debugging and error analysis\n• Explaining code concepts\n• Suggesting optimizations\n\nWhat would you like to work on today?',
-      timestamp: new Date(),
-    }
-  ]);
+  const { addLog } = useConsole();
+  const [messages, setMessages] = useState<Message[]>(
+    [
+      {
+        id: '1',
+        role: 'assistant',
+        content: 'Hello! I\'m your AI coding assistant. I can help you with:\n\n• Code generation and refactoring\n• Debugging and error analysis\n• Explaining code concepts\n• Suggesting optimizations\n\nWhat would you like to work on today?',
+        timestamp: new Date(),
+      }
+    ]
+  );
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<ChatMode>('ask');
   const [selectedModel, setSelectedModel] = useState<string>('gpt-4');
   const [showModelDropdown, setShowModelDropdown] = useState(false);
+  const [conversationId] = useState<string>(`chat-${Date.now()}`);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -81,22 +87,46 @@ export function LLMChat() {
     setIsLoading(true);
 
     const currentModel = AVAILABLE_MODELS.find(m => m.id === selectedModel);
-
-    // Simulate AI response (replace with actual LLM API call)
-    setTimeout(() => {
-      const modeText = mode === 'agent' 
-        ? '\n\n🤖 Agent Mode: I can execute actions and make changes to your code.'
-        : '';
+ 
+    try {
+      addLog('INFO', `Sending message to LLM (${currentModel?.name})...`, 'AI');
       
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
+      // Call real LLM service
+      const response = await llmService.chat(userMessage.content, conversationId);
+      
+      const modePrefix = mode === 'agent' ? '🤖 **Agent Mode Active**\n\n' : '';
+    
+    const assistantMessage: Message = {
+   id: (Date.now() + 1).toString(),
+  role: 'assistant',
+content: `${modePrefix}${response.explanation}`,
+      timestamp: new Date(),
+      };
+      
+  setMessages(prev => [...prev, assistantMessage]);
+      
+      addLog('SUCCESS', `LLM response received (${response.tokensUsed} tokens used)`, 'AI');
+      
+      // If there are suggested actions, log them
+   if (response.suggestedActions && response.suggestedActions.length > 0) {
+  response.suggestedActions.forEach(action => {
+   addLog('INFO', `Suggested: ${action.label}`, 'AI');
+      });
+      }
+    } catch (error) {
+    addLog('ERROR', `LLM request failed: ${error}`, 'AI');
+      
+      // Fallback to mock response
+  const assistantMessage: Message = {
+     id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `[Using ${currentModel?.name}]\n\nI received your message: "${userMessage.content}"${modeText}\n\nThis is a placeholder response. In a production environment, this would connect to ${currentModel?.provider} API to provide intelligent responses.`,
-        timestamp: new Date(),
+  content: `⚠️ **API Error** - Using fallback response.\n\nI received your message: "${userMessage.content}"\n\nThe backend LLM service is currently unavailable. This could be due to:\n• Missing API keys (OPENAI_API_KEY or ANTHROPIC_API_KEY)\n• Backend server not running\n• Network connectivity issues\n\nPlease check the console logs for more details.`,
+timestamp: new Date(),
       };
       setMessages(prev => [...prev, assistantMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -110,11 +140,15 @@ export function LLMChat() {
     setMessages([
       {
         id: '1',
-        role: 'assistant',
+     role: 'assistant',
         content: 'Chat cleared. How can I help you?',
         timestamp: new Date(),
       }
     ]);
+    
+    // Clear backend conversation history
+    llmService.clearHistory(conversationId);
+    addLog('INFO', 'Chat history cleared', 'AI');
   };
 
   const selectedModelInfo = AVAILABLE_MODELS.find(m => m.id === selectedModel);

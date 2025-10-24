@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
+import { useConsole } from '../contexts/ConsoleContext';
 import { 
   Play, 
   Save, 
@@ -22,6 +23,8 @@ interface ControlButton {
 }
 
 export function LiveCodeEditor() {
+  const { addLog } = useConsole();
+  
   // Editor state
   const [code, setCode] = useState(`<!DOCTYPE html>
 <html lang="en">
@@ -31,9 +34,9 @@ export function LiveCodeEditor() {
     <title>Live Preview</title>
     <style>
         body {
-            font-family: system-ui, -apple-system, sans-serif;
+   font-family: system-ui, -apple-system, sans-serif;
             padding: 2rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             min-height: 100vh;
             display: flex;
@@ -41,36 +44,36 @@ export function LiveCodeEditor() {
             justify-content: center;
         }
         .container {
-            text-align: center;
+  text-align: center;
             background: rgba(255, 255, 255, 0.1);
-            padding: 3rem;
-            border-radius: 1rem;
+      padding: 3rem;
+    border-radius: 1rem;
             backdrop-filter: blur(10px);
         }
         h1 {
-            font-size: 3rem;
+ font-size: 3rem;
             margin: 0 0 1rem 0;
         }
         button {
             background: white;
             color: #667eea;
-            border: none;
+border: none;
             padding: 1rem 2rem;
             font-size: 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-weight: 600;
-            transition: transform 0.2s;
+      border-radius: 0.5rem;
+ cursor: pointer;
+    font-weight: 600;
+      transition: transform 0.2s;
         }
         button:hover {
-            transform: scale(1.05);
+     transform: scale(1.05);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🚀 Live Preview</h1>
-        <p>Edit the code and see changes instantly!</p>
+ <p>Edit the code and see changes instantly!</p>
         <button onclick="alert('Hello from Live Preview!')">Click Me</button>
     </div>
 
@@ -83,7 +86,7 @@ export function LiveCodeEditor() {
   const [language, setLanguage] = useState<'html' | 'javascript' | 'typescript' | 'css' | 'python'>('html');
   const [previewKey, setPreviewKey] = useState(0);
   const [autoRefresh, setAutoRefresh] = useState(true);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+const [isFullscreen, setIsFullscreen] = useState(false);
   const [editorHeight, setEditorHeight] = useState(50); // Percentage
   const [isResizingVertical, setIsResizingVertical] = useState(false);
 
@@ -155,66 +158,60 @@ export function LiveCodeEditor() {
     if (autoRefresh && language === 'html') {
       const timeoutId = setTimeout(() => {
         refreshPreview();
-      }, 1000); // 1 second debounce
+ }, 1000); // 1 second debounce
 
       return () => clearTimeout(timeoutId);
     }
   }, [code, autoRefresh, language]);
 
-  const addLog = (type: 'log' | 'error' | 'warn' | 'info' | 'success', message: string) => {
-    // Logs will be sent to Console Tail instead
-    console.log(`[${type.toUpperCase()}] ${message}`);
-  };
-
   const refreshPreview = () => {
     if (language === 'html' && iframeRef.current) {
-      try {
+   try {
         const iframe = iframeRef.current;
         const doc = iframe.contentDocument || iframe.contentWindow?.document;
-        
-        if (doc) {
+      
+   if (doc) {
           // Inject console capture
-          const wrappedCode = `
+     const wrappedCode = `
             <script>
               // Capture console output
               const originalLog = console.log;
               const originalError = console.error;
-              const originalWarn = console.warn;
-              
-              window.addEventListener('error', (e) => {
-                window.parent.postMessage({ type: 'console-error', message: e.message }, '*');
-              });
-              
-              console.log = function(...args) {
-                window.parent.postMessage({ type: 'console-log', message: args.join(' ') }, '*');
+ const originalWarn = console.warn;
+      
+           window.addEventListener('error', (e) => {
+         window.parent.postMessage({ type: 'console-error', message: e.message }, '*');
+        });
+          
+          console.log = function(...args) {
+        window.parent.postMessage({ type: 'console-log', message: args.join(' ') }, '*');
                 originalLog.apply(console, args);
-              };
-              
-              console.error = function(...args) {
-                window.parent.postMessage({ type: 'console-error', message: args.join(' ') }, '*');
-                originalError.apply(console, args);
-              };
-              
-              console.warn = function(...args) {
-                window.parent.postMessage({ type: 'console-warn', message: args.join(' ') }, '*');
-                originalWarn.apply(console, args);
-              };
+       };
+     
+       console.error = function(...args) {
+   window.parent.postMessage({ type: 'console-error', message: args.join(' ') }, '*');
+          originalError.apply(console, args);
+          };
+         
+     console.warn = function(...args) {
+  window.parent.postMessage({ type: 'console-warn', message: args.join(' ') }, '*');
+         originalWarn.apply(console, args);
+       };
             </script>
             ${code}
-          `;
-          
-          doc.open();
-          doc.write(wrappedCode);
+    `;
+        
+    doc.open();
+    doc.write(wrappedCode);
           doc.close();
-          
-          addLog('info', 'Preview refreshed');
+      
+          addLog('INFO', 'Preview refreshed', 'Editor');
         }
-      } catch (error) {
-        addLog('error', `Failed to refresh preview: ${error}`);
+ } catch (error) {
+   addLog('ERROR', `Failed to refresh preview: ${error}`, 'Editor');
       }
     } else if (language === 'javascript' || language === 'typescript') {
-      // For JS/TS, just log that we'd execute it
-      addLog('info', 'JavaScript execution would run here (requires backend)');
+      addLog('INFO', 'JavaScript execution requires backend', 'Editor');
     }
     setPreviewKey(prev => prev + 1);
   };
@@ -223,19 +220,19 @@ export function LiveCodeEditor() {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+reader.onload = (e) => {
         const content = e.target?.result as string;
-        setCode(content);
+      setCode(content);
         
         // Detect language from file extension
         const ext = file.name.split('.').pop()?.toLowerCase();
         if (ext === 'html') setLanguage('html');
         else if (ext === 'js') setLanguage('javascript');
         else if (ext === 'ts') setLanguage('typescript');
-        else if (ext === 'css') setLanguage('css');
-        else if (ext === 'py') setLanguage('python');
+   else if (ext === 'css') setLanguage('css');
+   else if (ext === 'py') setLanguage('python');
         
-        addLog('success', `Loaded file: ${file.name}`);
+      addLog('SUCCESS', `Loaded file: ${file.name}`, 'Editor');
       };
       reader.readAsText(file);
     }
@@ -243,19 +240,19 @@ export function LiveCodeEditor() {
 
   const handleSave = () => {
     const blob = new Blob([code], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
+const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `code.${language === 'html' ? 'html' : language === 'javascript' ? 'js' : language === 'typescript' ? 'ts' : language === 'css' ? 'css' : 'py'}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    addLog('success', 'File saved to downloads');
+  URL.revokeObjectURL(url);
+    addLog('SUCCESS', 'File saved to downloads', 'Editor');
   };
 
   const handleRun = () => {
-    addLog('info', 'Running code...');
+    addLog('INFO', 'Running code...', 'Editor');
     refreshPreview();
   };
 
@@ -263,17 +260,17 @@ export function LiveCodeEditor() {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data.type === 'console-log') {
-        addLog('log', event.data.message);
+    addLog('INFO', event.data.message, 'Preview');
       } else if (event.data.type === 'console-error') {
-        addLog('error', event.data.message);
+        addLog('ERROR', event.data.message, 'Preview');
       } else if (event.data.type === 'console-warn') {
-        addLog('warn', event.data.message);
+addLog('WARN', event.data.message, 'Preview');
       }
     };
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  }, [addLog]);
 
   const editorControls: ControlButton[] = [
     { id: 'run', label: 'Run', icon: Play, action: handleRun, variant: 'primary' },
