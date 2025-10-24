@@ -7,7 +7,7 @@ interface CiPageProps {
 
 export function CiPage({ ciState }: CiPageProps) {
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-4 scrollbar-thin">
+    <div className="h-full overflow-y-auto px-6 py-4 scrollbar-thin scrollbar-thumb-hairline scrollbar-track-transparent">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl font-bold text-cyan mb-4">CI/CD Pipeline</h2>
         {ciState ? (

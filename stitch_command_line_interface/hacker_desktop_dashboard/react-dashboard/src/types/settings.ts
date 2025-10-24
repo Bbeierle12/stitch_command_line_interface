@@ -123,7 +123,7 @@ export interface WorkspaceSettings {
   telemetryEnabled: boolean;
 
   // 11) LLM & Automation
-  llmProvider: 'openai' | 'anthropic' | 'self-hosted' | 'none';
+  llmProvider: 'openai' | 'anthropic' | 'google' | 'ollama' | 'self-hosted' | 'none';
   llmModel: string;
   llmTokenBudget: number;
   llmStreaming: boolean;
@@ -131,6 +131,7 @@ export interface WorkspaceSettings {
   llmContextMaxLines: number;
   llmExcludeSecrets: boolean;
   llmApplyPolicy: 'require-approval' | 'auto-low-risk' | 'never-auto';
+  ollamaUrl?: string;
 
   // 12) Inspector Panel
   inspectorAutoOpen: string[]; // triggers: 'test-fail', 'hmr-crash', 'error', 'save'
@@ -301,6 +302,7 @@ export const DEFAULT_SETTINGS: WorkspaceSettings = {
   llmContextMaxLines: 1000,
   llmExcludeSecrets: true,
   llmApplyPolicy: 'require-approval',
+  ollamaUrl: 'http://localhost:11434',
 
   // 12) Inspector Panel
   inspectorAutoOpen: ['test-fail', 'hmr-crash', 'error'],

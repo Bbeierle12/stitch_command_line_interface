@@ -297,9 +297,9 @@ addLog('SUCCESS', result.output, 'Command');
         branch="main"
         buildStatus={buildStatus}
       />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden min-h-0">
         <LeftDock onOpenSettings={() => setSettingsOpen(true)} />
-        <div className="relative flex flex-1 flex-col">
+        <div className="relative flex flex-1 flex-col min-h-0">
           <SnapshotRail
             snapshots={snapshots}
             onSelect={(id) => {
@@ -309,8 +309,8 @@ addLog('SUCCESS', result.output, 'Command');
           />
           {/* MegaLens navigation moved to sidebar */}
           {/* <MegaLens onNavigate={handleLensNavigate} /> */}
-          <div className="flex flex-1 overflow-hidden">
-            <main className="flex flex-1 overflow-hidden">
+          <div className="flex flex-1 overflow-hidden min-h-0">
+            <main className="flex flex-1 overflow-y-auto">
               <Routes>
                 <Route
                   path="/"
@@ -341,7 +341,7 @@ addLog('SUCCESS', result.output, 'Command');
                 <Route path="/inbox" element={<InboxPage />} />
               </Routes>
             </main>
-            <aside className="w-80 border-l border-hairline">
+            <aside className="w-80 border-l border-hairline flex-shrink-0 overflow-hidden">
               <LLMChat />
             </aside>
           </div>

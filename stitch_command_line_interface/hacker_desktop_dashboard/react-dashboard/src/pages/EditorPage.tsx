@@ -2,7 +2,7 @@ import { LiveCodeEditor } from "../components/LiveCodeEditor";
 
 export function EditorPage() {
   return (
-    <div className="flex-1 overflow-hidden">
+    <div className="h-full overflow-hidden">
       <LiveCodeEditor />
     </div>
   );

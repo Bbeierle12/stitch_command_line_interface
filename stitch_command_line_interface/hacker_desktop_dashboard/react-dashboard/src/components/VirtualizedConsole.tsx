@@ -4,8 +4,11 @@
  */
 
 import { memo } from 'react';
-import { FixedSizeList } from 'react-window';
+// @ts-ignore - react-window types may not be fully compatible
+import ReactWindow from 'react-window';
 import type { ConsoleLog } from '../contexts/ConsoleContext';
+
+const FixedSizeList = ReactWindow.FixedSizeList || (ReactWindow as any).default?.FixedSizeList || ReactWindow;
 
 interface VirtualizedConsoleProps {
   logs: ConsoleLog[];

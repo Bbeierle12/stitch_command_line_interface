@@ -513,6 +513,57 @@ function NetworkSettings({ settings, updateSetting }: any) {
 }
 
 function LLMSettings({ settings, updateSetting }: any) {
+  // Model options based on provider
+  const getModelOptions = (provider: string) => {
+    switch (provider) {
+      case 'openai':
+        return [
+          { value: 'gpt-4', label: 'GPT-4 (8K)' },
+          { value: 'gpt-4-turbo', label: 'GPT-4 Turbo (128K)' },
+          { value: 'gpt-4-turbo-preview', label: 'GPT-4 Turbo Preview (128K)' },
+          { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo (16K)' },
+          { value: 'gpt-3.5-turbo-16k', label: 'GPT-3.5 Turbo 16K' },
+        ];
+      case 'anthropic':
+        return [
+          { value: 'claude-3-opus', label: 'Claude 3 Opus (200K)' },
+          { value: 'claude-3-sonnet', label: 'Claude 3 Sonnet (200K)' },
+          { value: 'claude-3-haiku', label: 'Claude 3 Haiku (200K)' },
+          { value: 'claude-2.1', label: 'Claude 2.1 (200K)' },
+          { value: 'claude-2', label: 'Claude 2 (100K)' },
+        ];
+      case 'google':
+        return [
+          { value: 'gemini-pro', label: 'Gemini Pro (32K)' },
+          { value: 'gemini-pro-vision', label: 'Gemini Pro Vision (32K)' },
+          { value: 'gemini-ultra', label: 'Gemini Ultra (32K)' },
+        ];
+      case 'ollama':
+        return [
+          { value: 'llama2:latest', label: 'Llama 2 Latest' },
+          { value: 'llama2:7b', label: 'Llama 2 7B' },
+          { value: 'llama2:13b', label: 'Llama 2 13B' },
+          { value: 'llama2:70b', label: 'Llama 2 70B' },
+          { value: 'codellama:latest', label: 'Code Llama Latest' },
+          { value: 'codellama:7b', label: 'Code Llama 7B' },
+          { value: 'codellama:13b', label: 'Code Llama 13B' },
+          { value: 'codellama:34b', label: 'Code Llama 34B' },
+          { value: 'mistral:latest', label: 'Mistral Latest' },
+          { value: 'mixtral:latest', label: 'Mixtral Latest' },
+          { value: 'phi:latest', label: 'Phi Latest' },
+          { value: 'neural-chat:latest', label: 'Neural Chat Latest' },
+        ];
+      case 'self-hosted':
+        return [
+          { value: 'custom', label: 'Custom Model' },
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const modelOptions = getModelOptions(settings.llmProvider);
+
   return (
     <div className="space-y-6">
       <div>
@@ -528,16 +579,34 @@ function LLMSettings({ settings, updateSetting }: any) {
             { value: 'none', label: 'Disabled' },
             { value: 'openai', label: 'OpenAI' },
             { value: 'anthropic', label: 'Anthropic (Claude)' },
+            { value: 'google', label: 'Google (Gemini)' },
+            { value: 'ollama', label: 'Ollama (Local)' },
             { value: 'self-hosted', label: 'Self-Hosted' },
           ]}
           onChange={(v) => updateSetting('llmProvider', v)}
         />
-        {settings.llmProvider !== 'none' && (
-          <SettingInput
+        {settings.llmProvider !== 'none' && modelOptions.length > 0 && (
+          <SettingSelect
             label="Model"
             value={settings.llmModel}
+            options={modelOptions}
             onChange={(v) => updateSetting('llmModel', v)}
-            placeholder="e.g., gpt-4, claude-3-opus"
+          />
+        )}
+        {settings.llmProvider === 'self-hosted' && (
+          <SettingInput
+            label="Custom Model Name"
+            value={settings.llmModel}
+            onChange={(v) => updateSetting('llmModel', v)}
+            placeholder="e.g., my-custom-model"
+          />
+        )}
+        {settings.llmProvider === 'ollama' && (
+          <SettingInput
+            label="Ollama Server URL"
+            value={settings.ollamaUrl || 'http://localhost:11434'}
+            onChange={(v) => updateSetting('ollamaUrl', v)}
+            placeholder="http://localhost:11434"
           />
         )}
       </SettingGroup>

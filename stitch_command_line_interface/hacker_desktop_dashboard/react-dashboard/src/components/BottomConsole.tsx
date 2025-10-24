@@ -1,6 +1,5 @@
 import { useState, useRef, KeyboardEvent } from "react";
 import { useConsole } from "../contexts/ConsoleContext";
-import { VirtualizedConsole } from "./VirtualizedConsole";
 import { useDebouncedCallback } from "../hooks/usePerformance";
 
 type TerminalType = "cmd" | "powershell";
@@ -46,8 +45,8 @@ export function BottomConsole() {
   };
 
   return (
-    <footer className="border-t border-hairline bg-panel/80">
-      <div className="flex h-40 flex-col">
+    <footer className="border-t border-hairline bg-panel/80 flex-shrink-0">
+      <div className="flex h-48 flex-col">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-hairline px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-white/50">
           <div className="flex items-center gap-2">
@@ -86,13 +85,29 @@ export function BottomConsole() {
           </div>
         </div>
 
-        {/* Virtualized Console Logs */}
-        <div className="flex-1 font-mono text-xs text-white/80">
-          <VirtualizedConsole 
-            logs={logs} 
-            height={consoleHeight}
-            itemHeight={32}
-          />
+        {/* Console Logs */}
+        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-hairline scrollbar-track-transparent font-mono text-xs text-white/80 px-4 py-2">
+          {logs.length === 0 ? (
+            <div className="flex items-center justify-center h-full text-white/40 text-sm">
+              No logs yet. Start coding!
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {logs.map((log, idx) => (
+                <div key={idx} className="flex items-start gap-2">
+                  <span className="text-white/30 shrink-0 w-16">{log.ts}</span>
+                  <span className={`text-xs ${
+                    log.tag === "ERROR" ? "text-danger" : 
+                    log.tag === "WARN" ? "text-warn" :
+                    log.tag === "SUCCESS" ? "text-ops-green" :
+                    ""
+                  }`}>
+                    {log.message}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Command Input */}

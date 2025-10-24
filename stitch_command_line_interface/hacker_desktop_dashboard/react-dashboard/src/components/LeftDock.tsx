@@ -26,7 +26,7 @@ interface NavItem {
   badge?: number;
   href?: string;
   children?: NavItem[];
-  action?: () => void;
+  action?: string | (() => void);
 }
 
 interface SavedView {
@@ -109,6 +109,13 @@ const categoryItems: NavItem[] = [
     icon: Map,
     tooltip: 'Maps, saved sets, research dossiers',
     badge: 5
+  },
+  {
+    id: 'settings',
+    label: 'Settings',
+    icon: Settings,
+    tooltip: 'Configure workspace, editor, and system settings',
+    action: 'openSettings'
   }
 ];
 
@@ -268,11 +275,18 @@ export function LeftDock({ onOpenSettings }: { onOpenSettings?: () => void }) {
           {categoryItems.map((category) => {
 const Icon = category.icon;
             const isExpanded = expandedCategory === category.id;
+            const isSettingsCategory = category.action === 'openSettings';
       
     return (
      <div key={category.id}>
  <button
-       onClick={() => toggleCategory(category.id)}
+       onClick={() => {
+         if (isSettingsCategory) {
+           onOpenSettings?.();
+         } else {
+           toggleCategory(category.id);
+         }
+       }}
    className={`
      w-full flex items-center gap-3 px-2 py-2.5 rounded
      transition-all duration-150 relative group
@@ -284,24 +298,24 @@ const Icon = category.icon;
        aria-label={category.tooltip}
         title={isCollapsed ? category.label : ''}
               >
-<Icon className="w-4 h-4 flex-shrink-0" />
-        {!isCollapsed && (
-  <>
-  <span className="text-sm font-medium flex-1 text-left">{category.label}</span>
-     {category.badge && (
-         <span className="bg-white/10 text-white/80 text-xs px-1.5 py-0.5 rounded font-medium">
-            {category.badge}
-          </span>
-         )}
-       <ChevronDown 
-                 className={`w-4 h-4 transition-transform ${
-isExpanded ? '' : '-rotate-90'
-            }`}
-            />
-          </>
-            )}
-     
-               {isCollapsed && (
+                <Icon className="w-4 h-4 flex-shrink-0" />
+                {!isCollapsed && (
+                  <>
+                    <span className="text-sm font-medium flex-1 text-left">{category.label}</span>
+                    {category.badge && (
+                      <span className="bg-white/10 text-white/80 text-xs px-1.5 py-0.5 rounded font-medium">
+                        {category.badge}
+                      </span>
+                    )}
+                    {!isSettingsCategory && (
+                      <ChevronDown 
+                        className={`w-4 h-4 transition-transform ${
+                          isExpanded ? '' : '-rotate-90'
+                        }`}
+                      />
+                    )}
+                  </>
+                )}               {isCollapsed && (
    <div className="
        absolute left-full ml-2 px-2 py-1 bg-panel border border-hairline
        text-xs rounded opacity-0 group-hover:opacity-100 
@@ -315,7 +329,7 @@ pointer-events-none transition-opacity whitespace-nowrap
                 </button>
     
                 {/* Expandable content */}
-  {isExpanded && !isCollapsed && (
+  {isExpanded && !isCollapsed && !isSettingsCategory && (
     <div className="ml-8 mt-1 mb-2 space-y-1">
         <div className="text-xs text-white/50 px-2 py-1">
   {category.tooltip}

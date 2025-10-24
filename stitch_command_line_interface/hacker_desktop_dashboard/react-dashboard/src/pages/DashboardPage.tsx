@@ -34,14 +34,14 @@ previewState,
   onPreviewModeChange
 }: DashboardPageProps) {
   return (
-    <div className="flex-1 overflow-hidden flex gap-4 p-4">
+    <div className="h-full overflow-hidden flex gap-4 p-4">
       {/* Left Side - Live Code Editor */}
-    <div className="flex-1 overflow-hidden">
+    <div className="flex-1 min-h-0 overflow-hidden">
         <LiveCodeEditor />
       </div>
 
       {/* Right Side - Metrics Dashboard */}
-      <div className="w-80 overflow-y-auto space-y-4 scrollbar-thin">
+      <div className="w-80 flex-shrink-0 overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-hairline scrollbar-track-transparent">
         {/* CI/CD Status */}
         {ciState && (
           <MetricCard 
