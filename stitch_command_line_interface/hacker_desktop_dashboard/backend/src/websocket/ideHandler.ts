@@ -24,12 +24,14 @@ export function setupIDEWebSocket(io: Server): void {
   const clients = new Map<string, IDEClient>();
 
   io.on('connection', (socket: Socket) => {
-    logger.info(`IDE client connected: ${socket.id}`);
+    // User is already authenticated via middleware in server.ts
+    logger.info(`IDE client connected: ${socket.data.username} (${socket.data.role})`);
 
     // Register client
     const client: IDEClient = {
       id: socket.id,
-      username: socket.handshake.query.username as string || 'Anonymous',
+      userId: socket.data.userId,
+      username: socket.data.username,
     };
     clients.set(socket.id, client);
 
@@ -37,7 +39,14 @@ export function setupIDEWebSocket(io: Server): void {
     socket.broadcast.emit('user:join', {
       userId: socket.id,
       username: client.username,
+      role: socket.data.role,
     });
+
+    // Helper to check if user has required role
+    const hasRole = (requiredRole: 'admin' | 'developer' | 'viewer') => {
+      const roleHierarchy: Record<string, number> = { viewer: 1, developer: 2, admin: 3 };
+      return roleHierarchy[socket.data.role] >= roleHierarchy[requiredRole];
+    };
 
     /**
      * File Operations
@@ -94,9 +103,17 @@ export function setupIDEWebSocket(io: Server): void {
       }
     });
 
-    // Delete file
+    // Delete file (admin only)
     socket.on('file:delete', async (data: { path: string }, callback) => {
       try {
+        // Require admin role
+        if (!hasRole('admin')) {
+          return callback({ 
+            success: false, 
+            error: 'Admin role required to delete files' 
+          });
+        }
+
         await workspaceService.deleteFile(data.path);
         
         // Broadcast deletion
@@ -105,6 +122,7 @@ export function setupIDEWebSocket(io: Server): void {
           userId: socket.id,
         });
 
+        logger.info(`File deleted by ${socket.data.username}: ${data.path}`);
         callback({ success: true });
       } catch (error) {
         logger.error('Failed to delete file:', error);
@@ -119,13 +137,23 @@ export function setupIDEWebSocket(io: Server): void {
      * Code Execution
      */
     
-    // Execute code
+    // Execute code (developer role required)
     socket.on('code:execute', async (data: { 
       code: string; 
       language: 'javascript' | 'typescript';
       timeout?: number;
     }, callback) => {
       try {
+        // Require developer role
+        if (!hasRole('developer')) {
+          return callback({ 
+            success: false, 
+            error: 'Developer role required to execute code' 
+          });
+        }
+
+        logger.info(`Code execution requested by ${socket.data.username} (${data.language})`);
+
         const executionId = await executionService.executeCode({
           code: data.code,
           language: data.language,

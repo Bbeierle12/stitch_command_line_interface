@@ -53,12 +53,39 @@ export class AuthService {
     this.REFRESH_TOKEN_EXPIRY = process.env.REFRESH_TOKEN_EXPIRY || '7d';
     this.SALT_ROUNDS = 10;
 
-    if (process.env.NODE_ENV === 'production' && this.JWT_SECRET.includes('dev')) {
-      logger.warn('⚠️  WARNING: Using default JWT secret in production!');
+    // Production safety checks
+    const isProduction = process.env.NODE_ENV === 'production';
+    
+    if (isProduction) {
+      // Throw error if using default secrets in production
+      if (this.JWT_SECRET.includes('dev-secret') || this.JWT_SECRET.includes('change-this')) {
+        throw new Error(
+          '🚨 SECURITY ERROR: Cannot use default JWT_SECRET in production! ' +
+          'Set a strong JWT_SECRET environment variable.'
+        );
+      }
+      
+      if (this.JWT_REFRESH_SECRET.includes('dev-refresh') || this.JWT_REFRESH_SECRET.includes('change-this')) {
+        throw new Error(
+          '🚨 SECURITY ERROR: Cannot use default JWT_REFRESH_SECRET in production! ' +
+          'Set a strong JWT_REFRESH_SECRET environment variable.'
+        );
+      }
+
+      logger.info('✅ Production JWT secrets validated');
+    } else {
+      // Development warning
+      if (this.JWT_SECRET.includes('dev')) {
+        logger.warn('⚠️  WARNING: Using default JWT secret in development. Change in production!');
+      }
     }
 
-    // Create default admin user
-    this.createDefaultUsers();
+    // Create default users only in non-production
+    if (!isProduction) {
+      this.createDefaultUsers();
+    } else {
+      logger.info('✅ Production mode: Skipping default user creation');
+    }
   }
 
   /**

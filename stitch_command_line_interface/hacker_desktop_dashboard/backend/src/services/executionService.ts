@@ -46,18 +46,26 @@ export class ExecutionService extends EventEmitter {
   private readonly DEFAULT_TIMEOUT_MS: number;
   private readonly DEFAULT_MEMORY_LIMIT_MB: number;
   private readonly MAX_OUTPUT_SIZE_KB: number;
+  private readonly MAX_CONCURRENT_EXECUTIONS: number;
+  private activeExecutions: number = 0;
 
   constructor() {
     super();
     this.DEFAULT_TIMEOUT_MS = parseInt(process.env.MAX_EXECUTION_TIME_MS || '30000', 10);
     this.DEFAULT_MEMORY_LIMIT_MB = parseInt(process.env.MAX_MEMORY_MB || '512', 10);
     this.MAX_OUTPUT_SIZE_KB = parseInt(process.env.MAX_OUTPUT_SIZE_KB || '1024', 10);
+    this.MAX_CONCURRENT_EXECUTIONS = parseInt(process.env.MAX_CONCURRENT_EXECUTIONS || '5', 10);
   }
 
   /**
    * Execute code in sandbox
    */
   async executeCode(options: ExecutionOptions): Promise<string> {
+    // Check concurrency limit
+    if (this.activeExecutions >= this.MAX_CONCURRENT_EXECUTIONS) {
+      throw new Error(`Concurrent execution limit reached (${this.MAX_CONCURRENT_EXECUTIONS}). Please wait for other executions to complete.`);
+    }
+
     const id = this.generateExecutionId(options.code);
     const startTime = Date.now();
 
@@ -78,8 +86,11 @@ export class ExecutionService extends EventEmitter {
       startTime,
     });
 
+    // Increment active execution counter
+    this.activeExecutions++;
+
     this.emit('execution:start', { id, options });
-    logger.info(`Starting execution ${id}`);
+    logger.info(`Starting execution ${id} (${this.activeExecutions}/${this.MAX_CONCURRENT_EXECUTIONS} active)`);
 
     try {
       // Execute based on language
@@ -108,8 +119,11 @@ export class ExecutionService extends EventEmitter {
         metrics.endTime = endTime;
       }
 
+      // Decrement active execution counter
+      this.activeExecutions--;
+
       this.emit('execution:complete', result);
-      logger.info(`Execution ${id} completed in ${result.runtime}ms`);
+      logger.info(`Execution ${id} completed in ${result.runtime}ms (${this.activeExecutions}/${this.MAX_CONCURRENT_EXECUTIONS} active)`);
     }
 
     return id;
@@ -304,6 +318,8 @@ export class ExecutionService extends EventEmitter {
     completed: number;
     failed: number;
     avgRuntime: number;
+    activeExecutions: number;
+    maxConcurrent: number;
   } {
     const results = Array.from(this.executions.values());
     
@@ -315,6 +331,8 @@ export class ExecutionService extends EventEmitter {
       avgRuntime: results.length > 0
         ? results.reduce((sum, r) => sum + r.runtime, 0) / results.length
         : 0,
+      activeExecutions: this.activeExecutions,
+      maxConcurrent: this.MAX_CONCURRENT_EXECUTIONS,
     };
   }
 

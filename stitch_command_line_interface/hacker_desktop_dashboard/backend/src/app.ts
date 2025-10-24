@@ -11,7 +11,7 @@ import { logger } from './utils/logger';
 dotenv.config();
 
 // Import routes
-import authRoutes from './routes/auth';
+import authJwtRoutes from './routes/auth-jwt';
 import ciRoutes from './routes/ci';
 import commandRoutes from './routes/commands';
 import editorRoutes from './routes/editor';
@@ -25,6 +25,9 @@ import snapshotsRoutes from './routes/snapshots';
 import systemRoutes from './routes/system';
 import ideRoutes from './routes/ide';
 
+// Import authentication middleware
+import { authenticateToken, requireDeveloper } from './middleware/auth';
+
 // Import services for initialization
 import { workspaceService } from './services/workspaceService';
 
@@ -35,10 +38,32 @@ app.disable('x-powered-by');
 
 // Security middleware
 app.use(helmet());
+
+// CORS with strict allowlist validation
+const corsAllowlist = process.env.CORS_ORIGIN?.split(',').map(o => o.trim()) || ['http://localhost:5173'];
+const corsCredentials = process.env.CORS_CREDENTIALS === 'true';
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN?.split(',') || 'http://localhost:5173',
-    credentials: process.env.CORS_CREDENTIALS === 'true',
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, Postman)
+      if (!origin) {
+        return callback(null, true);
+      }
+      
+      // Check if origin is in allowlist
+      if (corsAllowlist.includes(origin)) {
+        callback(null, true);
+      } else {
+        logger.warn(`CORS blocked origin: ${origin}`);
+        callback(new Error(`Origin ${origin} not allowed by CORS policy`));
+      }
+    },
+    credentials: corsCredentials,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
+    maxAge: 86400, // 24 hours
   })
 );
 
@@ -56,10 +81,7 @@ app.use(
   })
 );
 
-// Rate limiting
-app.use('/v1', rateLimiter);
-
-// Health endpoint
+// Health endpoint (public, no auth required)
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), uptime: process.uptime(), version: process.env.npm_package_version || '1.0.0' });
 });
@@ -69,8 +91,16 @@ workspaceService.initialize().catch(err => {
   logger.error('Failed to initialize workspace:', err);
 });
 
-// API routes
-app.use('/v1/auth', authRoutes);
+// Public routes - authentication endpoints (no auth required)
+app.use('/v1/auth', rateLimiter, authJwtRoutes);
+
+// Protected /v1 routes - require authentication
+app.use('/v1', authenticateToken, rateLimiter);
+
+// Protected /api routes - require authentication AND developer role
+app.use('/api', authenticateToken, requireDeveloper, rateLimiter);
+
+// API routes (all protected by global middleware above)
 app.use('/v1/ci', ciRoutes);
 app.use('/v1/commands', commandRoutes);
 app.use('/v1/editor', editorRoutes);
@@ -82,7 +112,7 @@ app.use('/v1/preview', previewRoutes);
 app.use('/v1/security', securityRoutes);
 app.use('/v1/snapshots', snapshotsRoutes);
 app.use('/v1/system', systemRoutes);
-app.use('/api', ideRoutes); // IDE routes on /api prefix
+app.use('/api', ideRoutes); // IDE routes on /api prefix (protected by developer role)
 
 // 404 handler
 app.use((req, res) => {

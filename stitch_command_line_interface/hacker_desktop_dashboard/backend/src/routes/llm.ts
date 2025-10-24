@@ -1,10 +1,18 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { llmService } from '../services/llmService';
 import { logger } from '../utils/logger';
+import {
+  validateLLMExplain,
+  validateLLMAnalyzeCode,
+  validateLLMGenerateCode,
+  validateLLMCompletions,
+  validateLLMClearContext,
+  validateLLMOptimizeContext,
+} from '../middleware/validation';
 
 const router = Router();
 
-router.post('/explain', async (req, res) => {
+router.post('/explain', validateLLMExplain, async (req: Request, res: Response) => {
   try {
     const { context, data, provider, model, sessionId } = req.body || {};
     const session = sessionId || `session-${Date.now()}`;
@@ -38,15 +46,11 @@ router.post('/explain', async (req, res) => {
   }
 });
 
-router.post('/analyze-code', async (req, res) => {
+router.post('/analyze-code', validateLLMAnalyzeCode, async (req: Request, res: Response) => {
   try {
     const { code, analysisType, provider, model, sessionId } = req.body || {};
     
-    if (!code) {
-      res.status(400).json({ error: { code: 'INVALID_REQUEST', message: 'code is required' } });
-      return;
-    }
-
+    // Validation already handled by middleware
     const session = sessionId || `code-analysis-${Date.now()}`;
     const prompt = `Analyze the following ${analysisType || 'code'} and identify potential issues, improvements, and recommendations:\n\n\`\`\`\n${code}\n\`\`\``;
 
@@ -69,15 +73,11 @@ router.post('/analyze-code', async (req, res) => {
   }
 });
 
-router.post('/generate-code', async (req, res) => {
+router.post('/generate-code', validateLLMGenerateCode, async (req: Request, res: Response) => {
   try {
     const { prompt, language, provider, model, sessionId } = req.body || {};
     
-    if (!prompt || !language) {
-      res.status(400).json({ error: { code: 'INVALID_REQUEST', message: 'prompt and language are required' } });
-      return;
-    }
-
+    // Validation already handled by middleware
     const session = sessionId || `code-gen-${Date.now()}`;
     const fullPrompt = `Generate ${language} code for the following requirement:\n\n${prompt}\n\nProvide clean, idiomatic code with brief explanations.`;
 
@@ -101,7 +101,7 @@ router.post('/generate-code', async (req, res) => {
   }
 });
 
-router.post('/completions', async (req, res) => {
+router.post('/completions', validateLLMCompletions, async (req: Request, res: Response) => {
   try {
     const { prefix, context, provider, model, sessionId } = req.body || {};
     const session = sessionId || `completion-${Date.now()}`;
@@ -129,14 +129,10 @@ router.post('/completions', async (req, res) => {
 });
 
 // Context management endpoints
-router.post('/context/clear', (req, res) => {
+router.post('/context/clear', validateLLMClearContext, (req: Request, res: Response) => {
   const { sessionId } = req.body || {};
   
-  if (!sessionId) {
-    res.status(400).json({ error: { code: 'INVALID_REQUEST', message: 'sessionId is required' } });
-    return;
-  }
-
+  // Validation already handled
   llmService.clearContext(sessionId);
   res.json({ success: true, message: 'Context cleared' });
 });
@@ -147,15 +143,11 @@ router.get('/context/summary/:sessionId', (req, res) => {
   res.json(summary);
 });
 
-router.post('/context/optimize', async (req, res) => {
+router.post('/context/optimize', validateLLMOptimizeContext, async (req: Request, res: Response) => {
   try {
     const { sessionId } = req.body || {};
     
-    if (!sessionId) {
-      res.status(400).json({ error: { code: 'INVALID_REQUEST', message: 'sessionId is required' } });
-      return;
-    }
-
+    // Validation already handled
     await llmService.optimizeContext(sessionId);
     const summary = llmService.getContextSummary(sessionId);
     

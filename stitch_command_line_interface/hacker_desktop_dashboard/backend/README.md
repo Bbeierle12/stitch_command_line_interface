@@ -176,10 +176,56 @@ pm2 logs
 
 ## Security
 
-- All endpoints except `/auth/login` require JWT authentication
-- Rate limiting: 100 requests/minute per IP
-- Command execution is sandboxed and validated
-- Sensitive data is encrypted at rest and in transit
+⚠️ **IMPORTANT:** This backend has been hardened with P0 security controls. See [P0_SECURITY_HARDENING.md](./P0_SECURITY_HARDENING.md) for complete details.
+
+### Authentication & Authorization
+- **JWT Required:** All endpoints except `/v1/auth/*` require valid JWT token
+- **Role-Based Access:** 3 roles - viewer, developer, admin
+- **Token Expiry:** Access tokens: 15 minutes, Refresh tokens: 7 days
+
+### Default Users (Development Only)
+```
+admin / admin123      - Full access, user management
+developer / dev123    - IDE operations, code execution
+```
+**⚠️ CHANGE THESE IN PRODUCTION!**
+
+### API Security Controls
+- **Global Rate Limiting:** 100 requests/minute per IP
+- **Per-User Rate Limiting:** 10 code executions/minute per user
+- **File Extension Whitelist:** Only safe extensions allowed (.js, .ts, .py, etc.)
+- **Blocked Extensions:** .env, .sh, .bash, .ps1, .exe (security risk)
+- **Concurrency Limits:** Max 5 simultaneous code executions
+- **Resource Limits:** 30s timeout, 512MB memory, 10MB file size
+
+### Code Execution Security
+- Sandboxed execution via `isolated-vm`
+- No access to `require()`, `process`, or filesystem
+- Memory and CPU limits enforced
+- Output size limits (1MB max)
+
+### Audit Logging
+All security-sensitive operations are logged:
+- Authentication attempts (success/failure)
+- Authorization denials
+- File operations (create, delete, rename)
+- Code executions
+- Rate limit violations
+
+### Quick Security Reference
+See [SECURITY_QUICK_REFERENCE.md](./SECURITY_QUICK_REFERENCE.md) for:
+- API testing examples
+- Role access matrix
+- Common troubleshooting
+- Configuration guide
+
+### Security Testing
+```bash
+# Run security test suite
+npm test security.test.ts
+npm test workspace-security.test.ts
+npm test execution-security.test.ts
+```
 
 ## Monitoring
 

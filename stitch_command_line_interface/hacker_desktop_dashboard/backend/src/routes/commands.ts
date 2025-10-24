@@ -1,5 +1,10 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { logger } from '../utils/logger';
+import {
+  validateCommandValidate,
+  validateCommandExecute,
+  validateCommandStatus,
+} from '../middleware/validation';
 
 const router = Router();
 
@@ -16,7 +21,7 @@ router.get('/list', (_req, res) => {
   res.json({ commands: COMMANDS });
 });
 
-router.post('/validate', (req, res) => {
+router.post('/validate', validateCommandValidate, (req: Request, res: Response) => {
   const { commandId, args } = req.body || {};
   const exists = COMMANDS.some((c) => c.id === commandId);
   if (!exists) {
@@ -28,7 +33,7 @@ router.post('/validate', (req, res) => {
   res.json({ valid: true, commandId, args: args || [] });
 });
 
-router.get('/status/:commandId', (req, res) => {
+router.get('/status/:commandId', validateCommandStatus, (req: Request, res: Response) => {
   const { commandId } = req.params;
   const status = commandStatus[commandId];
   
@@ -52,7 +57,7 @@ router.get('/status/:commandId', (req, res) => {
   res.json({ commandId, ...status });
 });
 
-router.post('/execute', (req, res) => {
+router.post('/execute', validateCommandExecute, (req: Request, res: Response) => {
   const { commandId, args = [], dryRun = false } = req.body || {};
   const cmd = COMMANDS.find((c) => c.id === commandId);
   if (!cmd) {

@@ -1,14 +1,21 @@
-/**
- * IDE Routes - REST API for IDE operations
- */
-
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { workspaceService } from '../services/workspaceService';
 import { executionService } from '../services/executionService';
 import { llmService } from '../services/llmService';
 import { logger } from '../utils/logger';
+import { requireDeveloper, requireAdmin, userRateLimit } from '../middleware/auth';
+import {
+  validateWorkspaceFileRead,
+  validateWorkspaceFileWrite,
+  validateWorkspaceFileDelete,
+  validateWorkspaceSearch,
+  validateCodeExecution,
+} from '../middleware/validation';
 
 const router = Router();
+
+// Note: All routes are already protected by authenticateToken + requireDeveloper from app.ts
+// Additional guards below provide extra protection for write/delete/execute operations
 
 /**
  * Workspace Routes
@@ -30,7 +37,7 @@ router.get('/workspace/files', async (req, res) => {
 });
 
 // Read file
-router.get('/workspace/files/:path(*)', async (req, res) => {
+router.get('/workspace/files/:path(*)', validateWorkspaceFileRead, async (req: Request, res: Response) => {
   try {
     const file = await workspaceService.readFile(req.params.path);
     return res.json({ success: true, data: file });
@@ -44,7 +51,7 @@ router.get('/workspace/files/:path(*)', async (req, res) => {
 });
 
 // Create/update file
-router.post('/workspace/files', async (req, res) => {
+router.post('/workspace/files', validateWorkspaceFileWrite, async (req: Request, res: Response) => {
   try {
     const { path, content } = req.body;
     
@@ -67,7 +74,7 @@ router.post('/workspace/files', async (req, res) => {
 });
 
 // Update file
-router.put('/workspace/files/:path(*)', async (req, res) => {
+router.put('/workspace/files/:path(*)', validateWorkspaceFileWrite, async (req: Request, res: Response) => {
   try {
     const { content } = req.body;
     
@@ -90,9 +97,10 @@ router.put('/workspace/files/:path(*)', async (req, res) => {
 });
 
 // Delete file
-router.delete('/workspace/files/:path(*)', async (req, res) => {
+router.delete('/workspace/files/:path(*)', requireAdmin, validateWorkspaceFileDelete, async (req: Request, res: Response) => {
   try {
     await workspaceService.deleteFile(req.params.path);
+    logger.info(`File deleted by ${req.user?.username}: ${req.params.path}`);
     return res.json({ success: true });
   } catch (error) {
     logger.error('Failed to delete file:', error);
@@ -127,7 +135,7 @@ router.post('/workspace/directories', async (req, res) => {
 });
 
 // Rename file/directory
-router.post('/workspace/rename', async (req, res) => {
+router.post('/workspace/rename', requireAdmin, async (req, res) => {
   try {
     const { oldPath, newPath } = req.body;
     
@@ -139,6 +147,7 @@ router.post('/workspace/rename', async (req, res) => {
     }
 
     await workspaceService.rename(oldPath, newPath);
+    logger.info(`Renamed by ${req.user?.username}: ${oldPath} -> ${newPath}`);
     return res.json({ success: true });
   } catch (error) {
     logger.error('Failed to rename:', error);
@@ -150,7 +159,7 @@ router.post('/workspace/rename', async (req, res) => {
 });
 
 // Search files
-router.get('/workspace/search', async (req, res) => {
+router.get('/workspace/search', validateWorkspaceSearch, async (req: Request, res: Response) => {
   try {
     const query = req.query.q as string;
     const path = (req.query.path as string) || '';
@@ -191,8 +200,8 @@ router.get('/workspace/stats', async (_req, res) => {
  * Execution Routes
  */
 
-// Execute code
-router.post('/execute', async (req, res) => {
+// Execute code - require developer role + per-user rate limiting
+router.post('/execute', requireDeveloper, userRateLimit(10, 60000), validateCodeExecution, async (req: Request, res: Response) => {
   try {
     const { code, language, timeout, memoryLimit } = req.body;
     
@@ -202,6 +211,8 @@ router.post('/execute', async (req, res) => {
         error: 'Missing code or language' 
       });
     }
+
+    logger.info(`Code execution requested by ${req.user?.username} (${language})`);
 
     const executionId = await executionService.executeCode({
       code,

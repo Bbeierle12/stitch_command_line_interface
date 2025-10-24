@@ -45,11 +45,12 @@ export class WorkspaceService {
     this.workspaceRoot = process.env.WORKSPACE_ROOT || path.join(process.cwd(), 'workspace');
     this.maxFileSize = parseInt(process.env.MAX_FILE_SIZE_MB || '10', 10) * 1024 * 1024;
     
+    // Restricted extensions removed: .env (secrets), .sh/.bash/.ps1 (shell scripts)
+    // These pose security risks and should be managed through proper deployment/config
     this.allowedExtensions = new Set([
       '.js', '.ts', '.jsx', '.tsx', '.json', '.html', '.css', '.scss',
       '.py', '.java', '.cpp', '.c', '.h', '.rs', '.go', '.rb',
-      '.md', '.txt', '.yaml', '.yml', '.toml', '.xml',
-      '.sh', '.bash', '.ps1', '.sql', '.env'
+      '.md', '.txt', '.yaml', '.yml', '.toml', '.xml', '.sql'
     ]);
 
     this.excludePatterns = [
@@ -59,6 +60,7 @@ export class WorkspaceService {
       'build',
       'coverage',
       '.env.local',
+      '.env',
       '.DS_Store',
       'thumbs.db',
     ];

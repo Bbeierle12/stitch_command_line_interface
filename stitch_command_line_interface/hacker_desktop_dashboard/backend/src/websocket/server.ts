@@ -12,7 +12,12 @@ interface WebSocketClient extends WebSocket {
   isAlive?: boolean;
   userId?: string;
   subscriptions?: Set<string>;
+  authenticated?: boolean;
+  username?: string;
 }
+
+const MAX_SUBSCRIPTIONS_PER_CLIENT = parseInt(process.env.WS_MAX_SUBSCRIPTIONS || '10', 10);
+const EMIT_THROTTLE_MS = parseInt(process.env.WS_EMIT_THROTTLE_MS || '2000', 10);
 
 export function setupWebSocket(wss: WebSocketServer) {
   logger.info('Setting up WebSocket server');
@@ -25,11 +30,26 @@ export function setupWebSocket(wss: WebSocketServer) {
   logger.info('File watcher and dev server services initialized');
 
   // Handle new connections
-  wss.on('connection', (ws: WebSocketClient) => {
-    logger.info('New WebSocket connection');
+  wss.on('connection', (ws: WebSocketClient, req) => {
+    logger.info(`New WebSocket connection from ${req.socket.remoteAddress}`);
     
     ws.isAlive = true;
     ws.subscriptions = new Set();
+    ws.authenticated = false;
+
+    // Require authentication - send auth challenge
+    ws.send(JSON.stringify({
+      type: 'auth:required',
+      data: { message: 'Please authenticate with a valid JWT token' }
+    }));
+
+    // Set authentication timeout (30 seconds)
+    const authTimeout = setTimeout(() => {
+      if (!ws.authenticated) {
+        logger.warn('WebSocket connection closed: Authentication timeout');
+        ws.close(1008, 'Authentication timeout');
+      }
+    }, 30000);
 
     // Handle pong responses
     ws.on('pong', () => {
@@ -48,6 +68,7 @@ export function setupWebSocket(wss: WebSocketServer) {
 
     // Handle close
     ws.on('close', () => {
+      clearTimeout(authTimeout);
       logger.info('WebSocket connection closed');
     });
 
@@ -78,10 +99,11 @@ export function setupWebSocket(wss: WebSocketServer) {
     clearInterval(interval);
   });
 
-  // Periodic emitters for subscribed topics
+  // Periodic emitters for subscribed topics (throttled)
   const emitters = setInterval(() => {
     wss.clients.forEach((ws: WebSocketClient) => {
-      if (ws.readyState !== WebSocket.OPEN || !ws.subscriptions) return;
+      // Only emit to authenticated clients
+      if (ws.readyState !== WebSocket.OPEN || !ws.subscriptions || !ws.authenticated) return;
 
       if (ws.subscriptions.has('logs')) {
         const logMsg = {
@@ -139,7 +161,7 @@ export function setupWebSocket(wss: WebSocketServer) {
         ws.send(JSON.stringify(flowMsg));
       }
     });
-  }, 2000);
+  }, EMIT_THROTTLE_MS); // Use throttled interval from env
 
   wss.on('close', () => {
     clearInterval(emitters);
@@ -150,10 +172,45 @@ export function setupWebSocket(wss: WebSocketServer) {
 
 function handleMessage(
   ws: WebSocketClient,
-  message: { type: string; data?: unknown },
+  message: { type: string; data?: any },
   wss: WebSocketServer
 ) {
   const { type, data } = message;
+
+  // Handle authentication first
+  if (type === 'auth') {
+    const token = data?.token;
+    if (!token) {
+      ws.send(JSON.stringify({ type: 'auth:failed', data: { error: 'Token required' } }));
+      return;
+    }
+
+    // Verify token
+    import('../services/authService').then(({ authService }) => {
+      try {
+        const payload = authService.verifyToken(token);
+        ws.authenticated = true;
+        ws.userId = payload.userId;
+        ws.username = payload.username;
+        logger.info(`WebSocket authenticated: ${payload.username}`);
+        ws.send(JSON.stringify({ 
+          type: 'auth:success', 
+          data: { username: payload.username, role: payload.role }
+        }));
+      } catch (error) {
+        logger.warn('WebSocket auth failed:', error);
+        ws.send(JSON.stringify({ type: 'auth:failed', data: { error: 'Invalid token' } }));
+        ws.close(1008, 'Authentication failed');
+      }
+    });
+    return;
+  }
+
+  // All other messages require authentication
+  if (!ws.authenticated) {
+    ws.send(JSON.stringify({ type: 'error', data: { error: 'Not authenticated' } }));
+    return;
+  }
 
   switch (type) {
     case 'ping':
@@ -162,26 +219,35 @@ function handleMessage(
 
     case 'subscribe':
       if (!ws.subscriptions) ws.subscriptions = new Set();
-      if (Array.isArray((data as any)?.topics)) {
-        (data as any).topics.forEach((t: string) => ws.subscriptions!.add(t));
-      } else if (typeof (data as any)?.topic === 'string') {
-        ws.subscriptions.add((data as any).topic);
+      
+      const topicsToAdd = Array.isArray(data?.topics) ? data.topics : 
+                         data?.topic ? [data.topic] : [];
+      
+      // Check subscription limit
+      if (ws.subscriptions.size + topicsToAdd.length > MAX_SUBSCRIPTIONS_PER_CLIENT) {
+        ws.send(JSON.stringify({ 
+          type: 'error', 
+          data: { error: `Subscription limit exceeded (max: ${MAX_SUBSCRIPTIONS_PER_CLIENT})` }
+        }));
+        return;
       }
-      logger.info('Client subscriptions:', Array.from(ws.subscriptions));
+      
+      topicsToAdd.forEach((t: string) => ws.subscriptions!.add(t));
+      logger.info(`Client ${ws.username} subscriptions:`, Array.from(ws.subscriptions));
       ws.send(JSON.stringify({ type: 'subscribed', data: { topics: Array.from(ws.subscriptions) } }));
       break;
 
     case 'unsubscribe':
       if (ws.subscriptions) {
-        if (Array.isArray((data as any)?.topics)) {
-          (data as any).topics.forEach((t: string) => ws.subscriptions!.delete(t));
-        } else if (typeof (data as any)?.topic === 'string') {
-          ws.subscriptions.delete((data as any).topic);
+        if (Array.isArray(data?.topics)) {
+          data.topics.forEach((t: string) => ws.subscriptions!.delete(t));
+        } else if (typeof data?.topic === 'string') {
+          ws.subscriptions.delete(data.topic);
         } else {
           ws.subscriptions.clear();
         }
       }
-      logger.info('Client subscriptions after unsubscribe:', Array.from(ws.subscriptions || []));
+      logger.info(`Client ${ws.username} subscriptions after unsubscribe:`, Array.from(ws.subscriptions || []));
       ws.send(JSON.stringify({ type: 'unsubscribed', data: { topics: Array.from(ws.subscriptions || []) } }));
       break;
 

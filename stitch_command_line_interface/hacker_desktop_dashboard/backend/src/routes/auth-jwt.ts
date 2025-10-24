@@ -51,8 +51,14 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    // Authenticate and get tokens
     const tokens = await authService.login(username, password);
-    const user = authService.getUserById(tokens.accessToken.split('.')[1]); // Simplified
+    
+    // Get the token payload which contains user info
+    const payload = authService.verifyToken(tokens.accessToken);
+    
+    // Get full user details
+    const user = authService.getUserById(payload.userId);
 
     return res.json({
       success: true,

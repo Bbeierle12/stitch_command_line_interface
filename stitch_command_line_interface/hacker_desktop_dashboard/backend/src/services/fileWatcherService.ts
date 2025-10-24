@@ -38,7 +38,10 @@ export class FileWatcherService {
     }
 
     try {
-      // Watch source files, ignore node_modules, build artifacts, and hidden files
+      // Watch workspace files intelligently:
+      // - Include the workspace root to detect changes
+      // - Exclude specific patterns (node_modules, build artifacts, etc.) inside workspace
+      // - DO NOT exclude the entire workspace directory (removed **/workspace/**)
       this.watcher = chokidar.watch(this.workspacePath, {
         ignored: [
           '**/node_modules/**',
@@ -48,7 +51,9 @@ export class FileWatcherService {
           '**/coverage/**',
           '**/*.log',
           '**/.DS_Store',
-          '**/workspace/**', // Ignore backend workspace directory
+          // Exclude specific files but NOT the entire workspace directory
+          '**/.env',
+          '**/.env.local',
         ],
         persistent: true,
         ignoreInitial: true,
