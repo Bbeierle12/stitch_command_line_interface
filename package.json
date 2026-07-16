@@ -1,0 +1,17 @@
+{
+  "name": "stitch-cli-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc -b packages/core packages/cli",
+    "typecheck": "tsc -b packages/core packages/cli",
+    "stitch": "npm run build --workspace @stitch/core && npm run dev --workspace @stitch/cli --"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

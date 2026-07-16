@@ -1,0 +1,25 @@
+{
+  "name": "@stitch/cli",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "stitch": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx --conditions development src/index.tsx",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@stitch/core": "0.1.0",
+    "commander": "^14.0.2",
+    "ink": "^7.0.1",
+    "react": "^19.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
